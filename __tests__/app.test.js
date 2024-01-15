@@ -100,9 +100,9 @@ describe("GET /api/", () => {
         });
     });
     describe("/articles/:article_id/comments", () => {
-        test("200: status code responds with an array of comments for the given article_id with newest comments first", async () => {
-            const { status, body } = await request(app).get("/api/articles/1/comments");
-            const { comments } = body;
+        test("200: status code responds with an array of comments for the given article_id sorted by date in descending order", async () => {
+            const { status, body:{comments} } = await request(app).get("/api/articles/1/comments");
+            console.log(comments)
             const expectedCommentsTypes = {
                 comment_id: expect.any(Number),
                 votes: expect.any(Number),
