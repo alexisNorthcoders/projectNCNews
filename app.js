@@ -26,8 +26,12 @@ app.use((err,req,res,next) =>{
     if (err.code === "22P02" && err.article_id){
         res.status(400).send({message:`${err.article_id} is an invalid article_id (number)`})
     }
-    else if (err.message === "Article not found"){
+    else if (err.statusCode === 404){
+        
         res.status(404).send({message:err.message})
+    }
+    else {
+        res.status(500).send({ message: 'Internal Server Error' })
     }
 })
 
