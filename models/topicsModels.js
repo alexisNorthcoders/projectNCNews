@@ -8,7 +8,6 @@ exports.fetchAllTopics = () => {
 };
 exports.fetchArticleById = (article_id) => {
     const queryParams = [article_id]
-    
     const query = `SELECT * FROM articles
     WHERE article_id = $1`
     return db.query(query,queryParams)
@@ -21,7 +20,6 @@ exports.fetchArticleById = (article_id) => {
         return article.rows[0]
         }
     })
-    
 }
 exports.fetchArticles = () => {
     const query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
@@ -32,4 +30,16 @@ exports.fetchArticles = () => {
     ORDER BY articles.created_at DESC`
     return db.query(query)
     .then((articles)=> articles.rows)
+}
+exports.fetchCommentsByArticleId = (article_id) => {
+    const queryParams = [article_id]
+    const query =`SELECT * FROM comments
+    WHERE comments.article_id = $1
+    ORDER BY comments.created_at DESC`
+    return db.query(query,queryParams).then((comments)=> {
+        if (comments.rows.length === 0){
+            return Promise.reject({statusCode:404,message:`article_id ${article_id} doesn't have comments.`})
+        }
+        return comments.rows
+    })
 }
