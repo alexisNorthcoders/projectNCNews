@@ -47,4 +47,40 @@ describe("GET /api/", () => {
         });
 
     });
+    describe("/articles/:article_id",() => {
+        test("200: status code and responds with object corresponding to article_id",async() => {
+            const { status, body } = await request(app).get("/api/article/1")
+            const {article} = body
+console.log(article)
+            const expectedArticle =  {
+                article_id:expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url:expect.any(String)
+              }
+            expect(status).toBe(200)
+            expect(article).toMatchObject(expectedArticle)
+        })
+        test("404: status code when article not found",async () => {
+            const { status, body } = await request(app).get("/api/article/99999")
+            const {message} = body
+
+            expect(status).toBe(404)
+            expect(message).toBe("Article not found")
+
+
+             
+        })
+        test("400: status code when giving invalid type of article_id",async() => {
+             const {status,body} = await request(app).get("/api/article/banana")
+             const {message} = body
+
+             expect(status).toBe(400)
+             expect(message).toBe("banana is an invalid article_id (number)")
+        })
+    })
 });
