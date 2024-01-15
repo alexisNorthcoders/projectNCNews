@@ -8,6 +8,11 @@ afterAll(() => db.end());
 /* beforeEach(() => seed(data)); */
 
 describe("GET /api/", () => {
+    test("200:status code and responds with object describing all the available endpoints",async() => {
+        const { status, body } = await request(app).get("/api/");
+        expect(status).toBe(200)
+        expect(typeof body).toBe("object")
+    })
     describe("/topics", () => {
         test("200: status code and contains the expected data type", async () => {
             const { status, body } = await request(app).get("/api/topics");
