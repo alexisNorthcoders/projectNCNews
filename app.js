@@ -2,6 +2,7 @@ const express = require("express");
 const { getTopics } = require("./controllers/topicsControllers");
 const endpoints = require("./endpoints.json");
 const { getArticleById } = require("./controllers/topicsControllers");
+const { getArticles } = require("./controllers/topicsControllers");
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.get("/api", (req,res,next) => {
 })
 
 app.get("/api/article/:article_id",getArticleById)
+
+app.get("/api/articles",getArticles)
 
 app.all("/*", (req, res, next) => {
     res.status(404).send({ msg: "Path not found" });

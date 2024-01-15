@@ -1,4 +1,4 @@
-const { fetchAllTopics, fetchArticleById } = require("../models/topicsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles } = require("../models/topicsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -16,3 +16,9 @@ exports.getArticleById = (req, res, next) => {
             return next(err);
         });
 };
+exports.getArticles = (req,res,next) => {
+    fetchArticles().then((articles)=>{
+        
+        res.status(200).send({articles})
+    })
+}
