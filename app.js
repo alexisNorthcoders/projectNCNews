@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, postCommentByArticleId, patchVotesByArticleId } = require("./controllers/ncNewsControllers.js");
+const { getTopics, postCommentByArticleId, patchVotesByArticleId, deleteCommentByCommentId } = require("./controllers/ncNewsControllers.js");
 const endpoints = require("./endpoints.json");
 const { getArticleById } = require("./controllers/ncNewsControllers.js");
 const { getArticles } = require("./controllers/ncNewsControllers.js");
@@ -24,6 +24,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.patch("/api/articles/:article_id", patchVotesByArticleId);
 
+app.delete("/api/comments/:comment_id",deleteCommentByCommentId)
+
 app.all("/*", (req, res, next) => {
     res.status(404).send({ message: "Path not found" });
 
@@ -36,6 +38,9 @@ app.use((err, req, res, next) => {
         }
         else if(err.inc_votes){
             res.status(400).send({ message: `${err.inc_votes} is an invalid inc_votes (number)` });
+        }
+        else if(err.comment_id){
+            res.status(400).send({ message: `${err.comment_id} is an invalid comment_id (number)` });
         }
     }
     else if (err.code === "23503") {

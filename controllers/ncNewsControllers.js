@@ -1,4 +1,4 @@
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -64,4 +64,13 @@ exports.patchVotesByArticleId = (req,res,next) => {
         err.inc_votes=inc_votes
         return next(err)
     })
+}
+exports.deleteCommentByCommentId = (req,res,next) => {
+    const {comment_id} = req.params
+    removeCommentByCommentId(comment_id).then(()=>{
+        res.status(204).send()
+    })
+    .catch(err => {
+        err.comment_id=comment_id
+        return next(err)})
 }

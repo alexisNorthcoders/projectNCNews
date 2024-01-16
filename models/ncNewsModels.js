@@ -64,3 +64,13 @@ RETURNING *`;
         return rows[0]}
     });
 };
+exports.removeCommentByCommentId = (comment_id) =>{
+    const query= `DELETE FROM comments WHERE comment_id = $1`
+
+    return db.query(query,[comment_id]).then(({rowCount})=>{
+        if (rowCount === 0) {
+            return Promise.reject({ statusCode: 404, message: "Comment not found!" })
+        }
+        
+    })
+}
