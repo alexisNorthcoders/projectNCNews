@@ -100,9 +100,9 @@ describe("GET /api/", () => {
         });
     });
     describe("/articles/:article_id/comments", () => {
-        test("200: status code responds with an array of comments for the given article_id sorted by date in descending order", async () => {
+        test("200: status code responds with an array of comments for the given article_id", async () => {
             const { status, body:{comments} } = await request(app).get("/api/articles/1/comments");
-            console.log(comments)
+            
             const expectedCommentsTypes = {
                 comment_id: expect.any(Number),
                 votes: expect.any(Number),
@@ -116,15 +116,25 @@ describe("GET /api/", () => {
             comments.forEach((comment) => {
                 expect(comment).toMatchObject(expectedCommentsTypes);
             });
-            expect(comments).toBeSortedBy("created_at", { descending: true });
+            
 
         });
-        test("404: status code when comments not found", async () => {
-            const { status, body:{message} } = await request(app).get("/api/articles/4/comments");
+        test("200: status code responds with comments sorted by date in descending order",async () => {
+            const { status, body:{comments} } = await request(app).get("/api/articles/1/comments");
+            expect(comments).toBeSortedBy("created_at", { descending: true }); 
+        })
+        test("200: status code responds with empty array when article doesn't have any comments", async () => {
+            const { status, body:{comments} } = await request(app).get("/api/articles/4/comments");
+            
+            expect(status).toBe(200);
+            expect(comments).toEqual([]);
+        });
+        test("404: status code when article not found", async () => {
+            const { status, body:{message} } = await request(app).get("/api/articles/99999/comments");
             
             expect(status).toBe(404);
-            expect(message).toBe("article_id 4 doesn't have comments.");
-        });
+            expect(message).toBe("Article not found");
+        })
 
     });
 

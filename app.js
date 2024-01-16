@@ -1,9 +1,9 @@
 const express = require("express");
-const { getTopics } = require("./controllers/topicsControllers");
+const { getTopics } = require("./controllers/topicsControllers.js");
 const endpoints = require("./endpoints.json");
-const { getArticleById } = require("./controllers/topicsControllers");
-const { getArticles } = require("./controllers/topicsControllers");
-const { getCommentsByArticleId } = require("./controllers/topicsControllers");
+const { getArticleById } = require("./controllers/topicsControllers.js");
+const { getArticles } = require("./controllers/topicsControllers.js");
+const { getCommentsByArticleId } = require("./controllers/topicsControllers.js");
 
 const app = express();
 
