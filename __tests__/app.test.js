@@ -156,54 +156,54 @@ describe("POST /api/", () => {
                 "votes": 0,
                 "created_at": expect.any(String)
             };
-            
-            const { status, body: {comment} } = await request(app).post("/api/articles/9/comments").send(myComment);
 
-            expect(status).toBe(201)
-            expect(comment).toEqual(expectedResponse)
+            const { status, body: { comment } } = await request(app).post("/api/articles/9/comments").send(myComment);
+
+            expect(status).toBe(201);
+            expect(comment).toEqual(expectedResponse);
 
 
 
         });
-        test("404: status code when username is not found",async () => {
-            const myComment = { username: "anonymous", body: "I don't like this." }; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
+        test("404: status code when username is not found", async () => {
+            const myComment = { username: "anonymous", body: "I don't like this." };
+            const { status, body: { message } } = await request(app).post("/api/articles/9/comments").send(myComment);
 
-            expect(status).toBe(404)
-            expect(message).toBe("Couldn't find username anonymous!")
-        })
-        test("404: status code when article_id is not found",async () => {
-            const myComment = { username: "butter_bridge", body: "I don't like this." }; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+            expect(status).toBe(404);
+            expect(message).toBe("Couldn't find username anonymous!");
+        });
+        test("404: status code when article_id is not found", async () => {
+            const myComment = { username: "butter_bridge", body: "I don't like this." };
+            const { status, body: { message } } = await request(app).post("/api/articles/9999/comments").send(myComment);
 
-            expect(status).toBe(404)
-            expect(message).toBe("Couldn't find article_id 9999!")
-        })
-        test("404: status code when given wrong path",async () => {
-            const { status, body: {message} } = await request(app).post("/api/articels/9/comments")
+            expect(status).toBe(404);
+            expect(message).toBe("Couldn't find article_id 9999!");
+        });
+        test("404: status code when given wrong path", async () => {
+            const { status, body: { message } } = await request(app).post("/api/articels/9/comments");
 
-            expect(status).toBe(404)
-            expect(message).toBe("Path not found")
-        })
-        test("400: status code when body of request is missing username",async () => {
-            const myComment = { body: "I don't like this." }; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
+            expect(status).toBe(404);
+            expect(message).toBe("Path not found");
+        });
+        test("400: status code when body of request is missing username", async () => {
+            const myComment = { body: "I don't like this." };
+            const { status, body: { message } } = await request(app).post("/api/articles/9/comments").send(myComment);
 
-            expect(status).toBe(400)
-            expect(message).toBe("Invalid request! Missing information!")
-        })
-        test("400: status code when body of request is missing body",async () => {
-            const myComment = { username: "butter_bridge"}; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
+            expect(status).toBe(400);
+            expect(message).toBe("Invalid request! Missing information!");
+        });
+        test("400: status code when body of request is missing body", async () => {
+            const myComment = { username: "butter_bridge" };
+            const { status, body: { message } } = await request(app).post("/api/articles/9/comments").send(myComment);
 
-            expect(status).toBe(400)
-            expect(message).toBe("Invalid request! Missing information!")
-        })
+            expect(status).toBe(400);
+            expect(message).toBe("Invalid request! Missing information!");
+        });
     });
 });
-describe("PATCH /api/",() => {
-    describe("/articles/:article_id",() => {
-        test("200: status code increases votes property and responds with updated article",async () => {
+describe("PATCH /api/", () => {
+    describe("/articles/:article_id", () => {
+        test("200: status code increases votes property and responds with updated article", async () => {
             const newVote = { inc_votes: 9000 };
             const expectedArticle = {
                 article_id: 1,
@@ -215,12 +215,12 @@ describe("PATCH /api/",() => {
                 votes: 9100,
                 article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             };
-            const {status,body:{article}} = await request(app).patch("/api/articles/1").send(newVote)
-            
-            expect(status).toBe(200)
-            expect(article).toMatchObject(expectedArticle)
-        })
-        test("200: status code decreases votes property and responds with updated article",async () => {
+            const { status, body: { article } } = await request(app).patch("/api/articles/1").send(newVote);
+
+            expect(status).toBe(200);
+            expect(article).toMatchObject(expectedArticle);
+        });
+        test("200: status code decreases votes property and responds with updated article", async () => {
             const newVote = { inc_votes: -100 };
             const expectedArticle = {
                 article_id: 1,
@@ -232,16 +232,38 @@ describe("PATCH /api/",() => {
                 votes: 0,
                 article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             };
-            const {status,body:{article}} = await request(app).patch("/api/articles/1").send(newVote)
-            
-            expect(status).toBe(200)
-            expect(article).toMatchObject(expectedArticle)
-        })
-        test("404: status code when given wrong path",async () => {
-            const { status, body: {message} } = await request(app).patch("/api/srticles/1/")
+            const { status, body: { article } } = await request(app).patch("/api/articles/1").send(newVote);
 
-            expect(status).toBe(404)
-            expect(message).toBe("Path not found")
-        })
-    }) 
-})
+            expect(status).toBe(200);
+            expect(article).toMatchObject(expectedArticle);
+        });
+        test("404: status code when given wrong path", async () => {
+            const { status, body: { message } } = await request(app).patch("/api/srticles/1/");
+
+            expect(status).toBe(404);
+            expect(message).toBe("Path not found");
+        });
+        test("404: status code when article_id is not found", async () => {
+            const newVote = { inc_votes: 123 };
+            const { status, body: { message } } = await request(app).patch("/api/articles/9999/").send(newVote);
+
+            expect(status).toBe(404);
+            expect(message).toBe("Couldn't find article_id 9999!");
+        });
+        test("400: status code when body of request is invalid", async () => {
+            const newVote = { votes: 100 };
+            const { status, body: { message } } = await request(app).patch("/api/articles/1").send(newVote);
+
+            expect(status).toBe(400);
+            expect(message).toBe("Invalid request! Missing information!");
+        });
+        test("400: status code when body of request has value of invalid type", async () => {
+            const newVote = { inc_votes: "apples" };
+            const { status, body: { message } } = await request(app).patch("/api/articles/1").send(newVote);
+
+            expect(status).toBe(400);
+            expect(message).toBe("apples is an invalid inc_votes (number)");
+        });
+        
+    });
+});
