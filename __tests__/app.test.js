@@ -264,6 +264,35 @@ describe("PATCH /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("apples is an invalid inc_votes (number)");
         });
-        
+
+    });
+});
+describe("DELETE /api/", () => {
+    describe("/comments/:comment_id", () => {
+        test("204: status code responds with no content", async () => {
+            const { status } = await request(app).delete("/api/comments/1");
+
+            expect(status).toBe(204);
+        });
+        test("404: status code when trying to delete non-existent comment", async () => {
+            await request(app).delete("/api/comments/1");
+            const { status, body: { message } } = await request(app).delete("/api/comments/1");
+
+            expect(status).toBe(404);
+            expect(message).toBe("Comment not found!");
+        });
+        test("404: status code when given wrong path", async () => {
+            const { status, body: { message } } = await request(app).delete("/api/commetns/1");
+
+            expect(status).toBe(404);
+            expect(message).toBe("Path not found");
+        });
+        test("400: status code when trying to delete comment given wrong type", async () => {
+            const { status, body: { message } } = await request(app).delete("/api/comments/banana");
+
+            expect(status).toBe(400);
+            expect(message).toBe("banana is an invalid comment_id (number)");
+        });
+
     });
 });
