@@ -1,55 +1,62 @@
 const express = require("express");
-const { getTopics, postCommentByArticleId } = require("./controllers/topicsControllers.js");
+const { getTopics, postCommentByArticleId, patchVotesByArticleId } = require("./controllers/ncNewsControllers.js");
 const endpoints = require("./endpoints.json");
-const { getArticleById } = require("./controllers/topicsControllers.js");
-const { getArticles } = require("./controllers/topicsControllers.js");
-const { getCommentsByArticleId } = require("./controllers/topicsControllers.js");
+const { getArticleById } = require("./controllers/ncNewsControllers.js");
+const { getArticles } = require("./controllers/ncNewsControllers.js");
+const { getCommentsByArticleId } = require("./controllers/ncNewsControllers.js");
 
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 
 app.get("/api/topics", getTopics);
 
-app.get("/api", (req,res,next) => {
-    res.status(200).send({endpoints})
-    next()
-})
-app.get("/api/articles/:article_id",getArticleById)
-app.get("/api/articles",getArticles)
-app.get("/api/articles/:article_id/comments",getCommentsByArticleId)
+app.get("/api", (req, res, next) => {
+    res.status(200).send({ endpoints });
+    next();
+});
+app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles", getArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
-app.post("/api/articles/:article_id/comments",postCommentByArticleId)
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", patchVotesByArticleId);
 
 app.all("/*", (req, res, next) => {
     res.status(404).send({ message: "Path not found" });
-  
-})
-app.use((err,req,res,next) =>{
-    
-    if (err.code === "22P02" && err.article_id){
-        res.status(400).send({message:`${err.article_id} is an invalid article_id (number)`})
-    }
-    else if (err.code === "23503"){
-        if (err.article_id){
-            res.status(404).send({message:`Couldn't find article_id ${err.article_id}!`})
+
+});
+app.use((err, req, res, next) => {
+
+    if (err.code === "22P02") {
+        if (err.article_id) {
+            res.status(400).send({ message: `${err.article_id} is an invalid article_id (number)` });
         }
-        else if(err.username){
-            res.status(404).send({message:`Couldn't find username ${err.username}!`})
+        else if(err.inc_votes){
+            res.status(400).send({ message: `${err.inc_votes} is an invalid inc_votes (number)` });
         }
     }
-    else if (err.code === "23502"){
-        res.status(400).send({message:"Invalid request! Missing information!"})
+    else if (err.code === "23503") {
+        if (err.article_id) {
+            res.status(404).send({ message: `Couldn't find article_id ${err.article_id}!` });
+        }
+        else if (err.username) {
+            res.status(404).send({ message: `Couldn't find username ${err.username}!` });
+        }
     }
-    else if (err.statusCode === 404){
-          
-        res.status(404).send({message:err.message})
+    else if (err.code === "23502") {
+        res.status(400).send({ message: "Invalid request! Missing information!" });
+    }
+    else if (err.statusCode === 404) {
+
+        res.status(404).send({ message: err.message });
     }
     else {
-        res.status(500).send({ message: 'Internal Server Error' })
+        res.status(500).send({ message: 'Internal Server Error' });
     }
-})
+});
 
 
 module.exports = app;
