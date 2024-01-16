@@ -1,4 +1,4 @@
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId } = require("../models/topicsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId } = require("../models/topicsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -16,20 +16,39 @@ exports.getArticleById = (req, res, next) => {
             return next(err);
         });
 };
-exports.getArticles = (req,res,next) => {
-    fetchArticles().then((articles)=>{
-        
-        res.status(200).send({articles})
-    })
-}
-exports.getCommentsByArticleId = (req,res,next) => {
+exports.getArticles = (req, res, next) => {
+    fetchArticles().then((articles) => {
+
+        res.status(200).send({ articles });
+    });
+};
+exports.getCommentsByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const articleExistsQuery = fetchArticleById(article_id);
+    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id);
+    Promise.all([articleExistsQuery, commentsByArticleIdQuery])
+        .then((response) => {
+            const comments = response[1];
+            res.status(200).send({ comments });
+        })
+        .catch((err) => {
+            err.article_id = article_id;
+            next(err);
+        });
+};
+exports.postCommentByArticleId = (req,res,next) => {
     const {article_id} = req.params
-    const articleExistsQuery = fetchArticleById(article_id)
-    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id)
-    Promise.all([articleExistsQuery,commentsByArticleIdQuery])
-    .then((response) =>{
-        const comments = response[1]
-        res.status(200).send({comments})
+    const {body} = req
+    
+    insertCommentByArticleId(article_id,body).then((comment) => {
+        res.status(201).send({comment})
+    }).catch(err => {
+        
+        if (err.detail.includes("author")){err.username=body.username}
+        else if (err.detail.includes("article_id")){err.article_id=article_id}
+        
+        
+        return next(err)
+    
     })
-    .catch((err)=> next(err))
 }
