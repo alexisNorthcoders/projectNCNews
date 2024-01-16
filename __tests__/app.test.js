@@ -187,17 +187,22 @@ describe("POST /api/", () => {
         })
         test("400: status code when body of request is missing username",async () => {
             const myComment = { body: "I don't like this." }; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
 
             expect(status).toBe(400)
             expect(message).toBe("Invalid request! Missing information!")
         })
         test("400: status code when body of request is missing body",async () => {
             const myComment = { username: "butter_bridge"}; 
-            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
 
             expect(status).toBe(400)
             expect(message).toBe("Invalid request! Missing information!")
         })
     });
 });
+describe("PATCH /api/",() => {
+    describe("/articles/:article_id",() => {
+        test("200: status code ") 
+    }) 
+})
