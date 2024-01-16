@@ -203,6 +203,45 @@ describe("POST /api/", () => {
 });
 describe("PATCH /api/",() => {
     describe("/articles/:article_id",() => {
-        test("200: status code ") 
+        test("200: status code increases votes property and responds with updated article",async () => {
+            const newVote = { inc_votes: 9000 };
+            const expectedArticle = {
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 9100,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            };
+            const {status,body:{article}} = await request(app).patch("/api/articles/1").send(newVote)
+            
+            expect(status).toBe(200)
+            expect(article).toMatchObject(expectedArticle)
+        })
+        test("200: status code decreases votes property and responds with updated article",async () => {
+            const newVote = { inc_votes: -100 };
+            const expectedArticle = {
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 0,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            };
+            const {status,body:{article}} = await request(app).patch("/api/articles/1").send(newVote)
+            
+            expect(status).toBe(200)
+            expect(article).toMatchObject(expectedArticle)
+        })
+        test("404: status code when given wrong path",async () => {
+            const { status, body: {message} } = await request(app).patch("/api/srticles/1/")
+
+            expect(status).toBe(404)
+            expect(message).toBe("Path not found")
+        })
     }) 
 })

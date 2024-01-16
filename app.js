@@ -1,9 +1,9 @@
 const express = require("express");
-const { getTopics, postCommentByArticleId } = require("./controllers/topicsControllers.js");
+const { getTopics, postCommentByArticleId, patchVotesByArticleId } = require("./controllers/ncNewsControllers.js");
 const endpoints = require("./endpoints.json");
-const { getArticleById } = require("./controllers/topicsControllers.js");
-const { getArticles } = require("./controllers/topicsControllers.js");
-const { getCommentsByArticleId } = require("./controllers/topicsControllers.js");
+const { getArticleById } = require("./controllers/ncNewsControllers.js");
+const { getArticles } = require("./controllers/ncNewsControllers.js");
+const { getCommentsByArticleId } = require("./controllers/ncNewsControllers.js");
 
 
 const app = express();
@@ -21,6 +21,8 @@ app.get("/api/articles",getArticles)
 app.get("/api/articles/:article_id/comments",getCommentsByArticleId)
 
 app.post("/api/articles/:article_id/comments",postCommentByArticleId)
+
+app.patch("/api/articles/:article_id",patchVotesByArticleId)
 
 app.all("/*", (req, res, next) => {
     res.status(404).send({ message: "Path not found" });

@@ -41,14 +41,23 @@ exports.fetchCommentsByArticleId = (article_id) => {
         return rows;
     });
 };
-exports.insertCommentByArticleId = (article_id,comment) => {
+exports.insertCommentByArticleId = (article_id, comment) => {
     const { username, body } = comment;
-    
-    const query = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`;
-    const queryParams = [article_id, username,body];
 
-    return db.query(query, queryParams).then(({rows}) => {
+    const query = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`;
+    const queryParams = [article_id, username, body];
+
+    return db.query(query, queryParams).then(({ rows }) => rows[0]);
+};
+exports.updateVotesByArticleId = (article_id, inc_votes) => {
+    const query = `UPDATE articles
+SET votes = votes + $1
+WHERE article_id = $2
+RETURNING *`;
+    const queryParams = [inc_votes, article_id];
+
+    return db.query(query, queryParams).then(({ rows }) => {
         
-        return rows[0];
+        return rows[0]
     });
 };
