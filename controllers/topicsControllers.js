@@ -16,20 +16,23 @@ exports.getArticleById = (req, res, next) => {
             return next(err);
         });
 };
-exports.getArticles = (req,res,next) => {
-    fetchArticles().then((articles)=>{
-        
-        res.status(200).send({articles})
-    })
-}
-exports.getCommentsByArticleId = (req,res,next) => {
-    const {article_id} = req.params
-    const articleExistsQuery = fetchArticleById(article_id)
-    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id)
-    Promise.all([articleExistsQuery,commentsByArticleIdQuery])
-    .then((response) =>{
-        const comments = response[1]
-        res.status(200).send({comments})
-    })
-    .catch((err)=> next(err))
-}
+exports.getArticles = (req, res, next) => {
+    fetchArticles().then((articles) => {
+
+        res.status(200).send({ articles });
+    });
+};
+exports.getCommentsByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const articleExistsQuery = fetchArticleById(article_id);
+    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id);
+    Promise.all([articleExistsQuery, commentsByArticleIdQuery])
+        .then((response) => {
+            const comments = response[1];
+            res.status(200).send({ comments });
+        })
+        .catch((err) => {
+            err.article_id = article_id;
+            next(err);
+        });
+};

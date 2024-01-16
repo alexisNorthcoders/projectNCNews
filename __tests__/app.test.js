@@ -135,6 +135,11 @@ describe("GET /api/", () => {
             expect(status).toBe(404);
             expect(message).toBe("Article not found");
         })
+        test.only("400: status code when wrong type of article_id",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/apple/comments")
+            expect(status).toBe(400)
+            expect(message).toBe("apple is an invalid article_id (number)") 
+        })
 
     });
 
