@@ -9,7 +9,7 @@ afterAll(() => db.end());
 beforeEach(() => seed(data));
 
 describe("GET /api/", () => {
-    test("200:status code and responds with object describing all the available endpoints", async () => {
+    test("200: status code and responds with object describing all the available endpoints", async () => {
         const { status, body: { endpoints } } = await request(app).get("/api/");
 
         const importedEndpoints = require("../endpoints.json");
@@ -41,7 +41,7 @@ describe("GET /api/", () => {
         });
     });
     describe("/articles", () => {
-        test("200:status code and responds with article array of article objects and corresponding properties", async () => {
+        test("200: status code and responds with article array of article objects and corresponding properties", async () => {
             const { status, body: { articles } } = await request(app).get("/api/articles");
 
             const expectedArticleType = {
@@ -146,7 +146,7 @@ describe("GET /api/", () => {
 });
 describe("POST /api/", () => {
     describe("/articles/:article_id/comments", () => {
-        test.only("201:status code and responds with body of comment inserted ", async () => {
+        test("201: status code and responds with body of comment inserted ", async () => {
             const myComment = { username: "butter_bridge", body: "I didn't read this." };
             const expectedResponse = {
                 "comment_id": 19,
@@ -165,11 +165,39 @@ describe("POST /api/", () => {
 
 
         });
-        test("404:status code when given wrong path",async () => {
+        test("404: status code when username is not found",async () => {
+            const myComment = { username: "anonymous", body: "I don't like this." }; 
+            const { status, body: {message} } = await request(app).post("/api/articles/9/comments").send(myComment);
+
+            expect(status).toBe(404)
+            expect(message).toBe("Couldn't find username anonymous!")
+        })
+        test("404: status code when article_id is not found",async () => {
+            const myComment = { username: "butter_bridge", body: "I don't like this." }; 
+            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+
+            expect(status).toBe(404)
+            expect(message).toBe("Couldn't find article_id 9999!")
+        })
+        test("404: status code when given wrong path",async () => {
             const { status, body: {message} } = await request(app).post("/api/articels/9/comments")
 
             expect(status).toBe(404)
             expect(message).toBe("Path not found")
+        })
+        test("400: status code when body of request is missing username",async () => {
+            const myComment = { body: "I don't like this." }; 
+            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+
+            expect(status).toBe(400)
+            expect(message).toBe("Invalid request! Missing information!")
+        })
+        test("400: status code when body of request is missing body",async () => {
+            const myComment = { username: "butter_bridge"}; 
+            const { status, body: {message} } = await request(app).post("/api/articles/9999/comments").send(myComment);
+
+            expect(status).toBe(400)
+            expect(message).toBe("Invalid request! Missing information!")
         })
     });
 });

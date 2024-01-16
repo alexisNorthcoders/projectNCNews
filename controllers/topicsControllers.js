@@ -42,5 +42,13 @@ exports.postCommentByArticleId = (req,res,next) => {
     
     insertCommentByArticleId(article_id,body).then((comment) => {
         res.status(201).send({comment})
-    }).catch(err => next(err))
+    }).catch(err => {
+        
+        if (err.detail.includes("author")){err.username=body.username}
+        else if (err.detail.includes("article_id")){err.article_id=article_id}
+        
+        
+        return next(err)
+    
+    })
 }
