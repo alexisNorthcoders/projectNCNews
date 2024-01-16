@@ -10,8 +10,8 @@ beforeEach(() => seed(data));
 
 describe("GET /api/", () => {
     test("200:status code and responds with object describing all the available endpoints", async () => {
-        const { status, body:{endpoints} } = await request(app).get("/api/");
-       
+        const { status, body: { endpoints } } = await request(app).get("/api/");
+
         const importedEndpoints = require("../endpoints.json");
 
         expect(status).toBe(200);
@@ -27,8 +27,8 @@ describe("GET /api/", () => {
     });
     describe("/topics", () => {
         test("200: status code and contains the expected data type", async () => {
-            const { status, body:{topics} } = await request(app).get("/api/topics");
-            
+            const { status, body: { topics } } = await request(app).get("/api/topics");
+
             const expected = {
                 slug: expect.any(String),
                 description: expect.any(String)
@@ -42,8 +42,8 @@ describe("GET /api/", () => {
     });
     describe("/articles", () => {
         test("200:status code and responds with article array of article objects and corresponding properties", async () => {
-            const { status, body:{articles} } = await request(app).get("/api/articles");
-            
+            const { status, body: { articles } } = await request(app).get("/api/articles");
+
             const expectedArticleType = {
                 "author": expect.any(String),
                 "title": expect.any(String),
@@ -71,8 +71,8 @@ describe("GET /api/", () => {
     });
     describe("/articles/:article_id", () => {
         test("200: status code and responds with object corresponding to article_id", async () => {
-            const { status, body:{article} } = await request(app).get("/api/articles/1");
-           
+            const { status, body: { article } } = await request(app).get("/api/articles/1");
+
             const expectedArticle = {
                 article_id: 1,
                 title: "Living in the shadow of a great man",
@@ -87,22 +87,22 @@ describe("GET /api/", () => {
             expect(article).toMatchObject(expectedArticle);
         });
         test("404: status code when article not found", async () => {
-            const { status, body:{message} } = await request(app).get("/api/articles/99999");
-            
+            const { status, body: { message } } = await request(app).get("/api/articles/99999");
+
             expect(status).toBe(404);
             expect(message).toBe("Article not found");
         });
         test("400: status code when giving invalid type of article_id", async () => {
-            const { status, body:{message} } = await request(app).get("/api/articles/banana");
-            
+            const { status, body: { message } } = await request(app).get("/api/articles/banana");
+
             expect(status).toBe(400);
             expect(message).toBe("banana is an invalid article_id (number)");
         });
     });
     describe("/articles/:article_id/comments", () => {
         test("200: status code responds with an array of comments for the given article_id", async () => {
-            const { status, body:{comments} } = await request(app).get("/api/articles/1/comments");
-            
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments");
+
             const expectedCommentsTypes = {
                 comment_id: expect.any(Number),
                 votes: expect.any(Number),
@@ -116,31 +116,60 @@ describe("GET /api/", () => {
             comments.forEach((comment) => {
                 expect(comment).toMatchObject(expectedCommentsTypes);
             });
-            
+
 
         });
-        test("200: status code responds with comments sorted by date in descending order",async () => {
-            const { status, body:{comments} } = await request(app).get("/api/articles/1/comments");
-            expect(comments).toBeSortedBy("created_at", { descending: true }); 
-        })
+        test("200: status code responds with comments sorted by date in descending order", async () => {
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments");
+            expect(comments).toBeSortedBy("created_at", { descending: true });
+        });
         test("200: status code responds with empty array when article doesn't have any comments", async () => {
-            const { status, body:{comments} } = await request(app).get("/api/articles/4/comments");
-            
+            const { status, body: { comments } } = await request(app).get("/api/articles/4/comments");
+
             expect(status).toBe(200);
             expect(comments).toEqual([]);
         });
         test("404: status code when article not found", async () => {
-            const { status, body:{message} } = await request(app).get("/api/articles/99999/comments");
-            
+            const { status, body: { message } } = await request(app).get("/api/articles/99999/comments");
+
             expect(status).toBe(404);
             expect(message).toBe("Article not found");
-        })
-        test.only("400: status code when wrong type of article_id",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/apple/comments")
-            expect(status).toBe(400)
-            expect(message).toBe("apple is an invalid article_id (number)") 
-        })
+        });
+        test("400: status code when wrong type of article_id", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/apple/comments");
+            expect(status).toBe(400);
+            expect(message).toBe("apple is an invalid article_id (number)");
+        });
 
     });
 
+});
+describe("POST /api/", () => {
+    describe("/articles/:article_id/comments", () => {
+        test.only("201:status code and responds with body of comment inserted ", async () => {
+            const myComment = { username: "butter_bridge", body: "I didn't read this." };
+            const expectedResponse = {
+                "comment_id": 19,
+                "body": "I didn't read this.",
+                "article_id": 9,
+                "author": "butter_bridge",
+                "votes": 0,
+                "created_at": expect.any(String)
+            };
+            
+            const { status, body: {comment} } = await request(app).post("/api/articles/9/comments").send(myComment);
+
+            expect(status).toBe(201)
+            expect(comment).toEqual(expectedResponse)
+
+
+
+        });
+        test("404:status code when given wrong path",async () => {
+            const { status, body: {message} } = await request(app).post("/api/articels/9/comments")
+
+            expect(status).toBe(404)
+            expect(message).toBe("Path not found")
+        })
+    });
 });
