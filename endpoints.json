@@ -79,7 +79,7 @@
     "description": "serves an array of all users",
     "queries": [],
     "exampleResponse": {
-      "topics": [
+      "users": [
         {
           "username": "butter_bridge",
           "name": "jonny",
