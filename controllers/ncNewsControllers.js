@@ -1,4 +1,4 @@
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -36,41 +36,47 @@ exports.getCommentsByArticleId = (req, res, next) => {
             next(err);
         });
 };
-exports.postCommentByArticleId = (req,res,next) => {
-    const {article_id} = req.params
-    const {body} = req
-    
-    insertCommentByArticleId(article_id,body).then((comment) => {
-        res.status(201).send({comment})
+exports.postCommentByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const { body } = req;
+
+    insertCommentByArticleId(article_id, body).then((comment) => {
+        res.status(201).send({ comment });
     }).catch(err => {
-        
-        if (err.detail.includes("author")){err.username=body.username}
-        else if (err.detail.includes("article_id")){err.article_id=article_id}
-        
-        
-        return next(err)
-    
+
+        if (err.detail.includes("author")) { err.username = body.username; }
+        else if (err.detail.includes("article_id")) { err.article_id = article_id; }
+
+
+        return next(err);
+
+    });
+};
+exports.patchVotesByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const { body: { inc_votes } } = req;
+
+    updateVotesByArticleId(article_id, inc_votes).then((article) => {
+
+        res.status(200).send({ article });
     })
-}
-exports.patchVotesByArticleId = (req,res,next) => {
-    const {article_id} = req.params
-    const {body:{inc_votes}} = req
-    
-    updateVotesByArticleId(article_id,inc_votes).then((article) => {
-        
-        res.status(200).send({article})
+        .catch(err => {
+            err.inc_votes = inc_votes;
+            return next(err);
+        });
+};
+exports.deleteCommentByCommentId = (req, res, next) => {
+    const { comment_id } = req.params;
+    removeCommentByCommentId(comment_id).then(() => {
+        res.status(204).send();
     })
-    .catch(err =>{
-        err.inc_votes=inc_votes
-        return next(err)
-    })
-}
-exports.deleteCommentByCommentId = (req,res,next) => {
-    const {comment_id} = req.params
-    removeCommentByCommentId(comment_id).then(()=>{
-        res.status(204).send()
-    })
-    .catch(err => {
-        err.comment_id=comment_id
-        return next(err)})
-}
+        .catch(err => {
+            err.comment_id = comment_id;
+            return next(err);
+        });
+};
+exports.getUsers = (req, res, next) => {
+    fetchUsers()
+    .then((users)=> {res.status(200).send({users})})
+    .catch((err)=> {return next(err)})
+};
