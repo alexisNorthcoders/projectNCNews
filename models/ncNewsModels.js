@@ -21,14 +21,21 @@ exports.fetchArticleById = (article_id) => {
             }
         });
 };
-exports.fetchArticles = () => {
-    const query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
+exports.fetchArticles = (topic) => {
+    const queryParams = [];
+    let query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
     COUNT(comments.article_id) AS comment_count 
     FROM articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
+    LEFT JOIN comments ON articles.article_id = comments.article_id`;
+
+    if (topic) {
+        queryParams.push(topic);
+        query += ` WHERE articles.topic = $1`;
+    }
+    query += ` GROUP BY articles.article_id
     ORDER BY articles.created_at DESC`;
-    return db.query(query)
+
+    return db.query(query, queryParams)
         .then(({ rows }) => rows);
 };
 exports.fetchCommentsByArticleId = (article_id) => {
@@ -60,22 +67,23 @@ RETURNING *`;
         if (rows.length === 0) {
             return Promise.reject({ statusCode: 404, message: `Couldn't find article_id ${article_id}!` });
         }
-        else{
-        return rows[0]}
+        else {
+            return rows[0];
+        }
     });
 };
-exports.removeCommentByCommentId = (comment_id) =>{
-    const query= `DELETE FROM comments WHERE comment_id = $1`
+exports.removeCommentByCommentId = (comment_id) => {
+    const query = `DELETE FROM comments WHERE comment_id = $1`;
 
-    return db.query(query,[comment_id]).then(({rowCount})=>{
+    return db.query(query, [comment_id]).then(({ rowCount }) => {
         if (rowCount === 0) {
-            return Promise.reject({ statusCode: 404, message: "Comment not found!" })
+            return Promise.reject({ statusCode: 404, message: "Comment not found!" });
         }
-        
-    })
-}
+
+    });
+};
 exports.fetchUsers = () => {
-    return db.query(`SELECT * FROM users`).then(({rows}) => {
-        return rows
-    })
-}
+    return db.query(`SELECT * FROM users`).then(({ rows }) => {
+        return rows;
+    });
+};

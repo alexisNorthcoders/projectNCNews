@@ -1,3 +1,5 @@
+const db = require("../connection");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -20,3 +22,11 @@ exports.formatComments = (comments, idLookup) => {
     };
   });
 };
+exports.checkTopicExists = async (topic) => {
+  const {rows} = await db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+
+  if (!rows.length) {
+    return Promise.reject(({statusCode: 404, message: `${topic} topic not found!`}))
+  }
+  
+}
