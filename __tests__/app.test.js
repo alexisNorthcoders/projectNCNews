@@ -72,7 +72,6 @@ describe("GET /api/", () => {
     describe("/articles/:article_id", () => {
         test("200: status code and responds with object corresponding to article_id", async () => {
             const { status, body: { article } } = await request(app).get("/api/articles/1");
-
             const expectedArticle = {
                 article_id: 1,
                 title: "Living in the shadow of a great man",
@@ -98,6 +97,12 @@ describe("GET /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("banana is an invalid article_id (number)");
         });
+        test("200: status code article should include comment_count property",async () => {
+            const {status,body:{article}} = await request(app).get("/api/articles/1")
+            
+            expect(status).toBe(200)
+            expect(article.comment_count).toBe("11")
+        })
     });
     describe("/articles/:article_id/comments", () => {
         test("200: status code responds with an array of comments for the given article_id", async () => {

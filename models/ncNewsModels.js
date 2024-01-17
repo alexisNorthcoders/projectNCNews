@@ -8,8 +8,13 @@ exports.fetchAllTopics = () => {
 };
 exports.fetchArticleById = (article_id) => {
     const queryParams = [article_id];
-    const query = `SELECT * FROM articles
-    WHERE article_id = $1`;
+    const query = `SELECT articles.*,
+    COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id
+    `;
     return db.query(query, queryParams)
         .then(({ rows }) => {
 
