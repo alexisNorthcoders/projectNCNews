@@ -77,7 +77,7 @@
   },
   "GET /api/users": {
     "description": "serves an array of all users",
-    "queries": [],
+    "queries": ["topic"],
     "exampleResponse": {
       "users": [
         {

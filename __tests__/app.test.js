@@ -109,7 +109,7 @@ describe("GET /api/", () => {
                 created_at: expect.any(String),
                 author: expect.any(String),
                 body: expect.any(String),
-                article_id: expect.any(Number)
+                article_id: 1
             };
             expect(status).toBe(200);
             expect(comments.length).toBe(11);
@@ -142,6 +142,38 @@ describe("GET /api/", () => {
         });
 
     });
+    describe("/articles/?topic=:topic",() => {
+        test("200: status code responds with articles filtered by given topic",async () => {
+            const {status,body:{articles}} = await request(app).get("/api/articles/?topic=mitch")
+            const expectedArticle = {
+                "author": expect.any(String),
+                "title": expect.any(String),
+                "article_id": expect.any(Number),
+                "topic": "mitch",
+                "created_at": expect.any(String),
+                "votes": expect.any(Number),
+                "article_img_url": expect.any(String),
+                "comment_count": expect.any(String)
+            };
+            
+            expect(status).toBe(200)
+            expect(articles.length).toBe(12)
+            articles.forEach((article)=> {
+                expect(article).toMatchObject(expectedArticle)
+            })
+        })
+        test("200: status code responds with empty array when there are no articles with that topic",async () => {
+            const {status,body:{articles}} = await request(app).get("/api/articles/?topic=paper")
+            expect(status).toBe(200)
+            expect(articles).toEqual([])
+        })
+        test("404: status code when topic is not found",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/?topic=news")
+            
+            expect(status).toBe(404)
+            expect(message).toBe("news topic not found!")
+        })
+    })
     describe("/users", () => {
         test("200: status code responds with an array of objects containing all users information", async () => {
             const { status, body: { users } } = await request(app).get("/api/users");
