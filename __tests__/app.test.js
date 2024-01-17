@@ -142,7 +142,22 @@ describe("GET /api/", () => {
         });
 
     });
+    describe("/users", () => {
+        test("200: status code responds with an array of objects containing all users information", async () => {
+            const { status, body: { users } } = await request(app).get("/api/users");
+            const expectedUser = {
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            };
+            expect(status).toBe(200);
+            expect(users.length).toBe(4)
+            users.forEach((user) => {
+                expect(user).toMatchObject(expectedUser);
+            });
 
+        });
+    });
 });
 describe("POST /api/", () => {
     describe("/articles/:article_id/comments", () => {

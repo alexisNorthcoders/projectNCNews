@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, postCommentByArticleId, patchVotesByArticleId, deleteCommentByCommentId } = require("./controllers/ncNewsControllers.js");
+const { getTopics, postCommentByArticleId, patchVotesByArticleId, deleteCommentByCommentId, getUsers } = require("./controllers/ncNewsControllers.js");
 const endpoints = require("./endpoints.json");
 const { getArticleById } = require("./controllers/ncNewsControllers.js");
 const { getArticles } = require("./controllers/ncNewsControllers.js");
@@ -19,6 +19,7 @@ app.get("/api", (req, res, next) => {
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+app.get("/api/users",getUsers)
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
