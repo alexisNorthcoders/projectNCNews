@@ -1,5 +1,5 @@
 const { checkTopicExists } = require("../db/seeds/utils");
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -97,3 +97,11 @@ exports.getUsers = (req, res, next) => {
     .then((users)=> {res.status(200).send({users})})
     .catch((err)=> {return next(err)})
 };
+exports.getUserByUsername = (req,res,next) => {
+    const {username} = req.params
+    
+    fetchUserByUsername(username).then((user) => {
+    
+    res.status(200).send({user})})
+    .catch(err => next(err))
+}
