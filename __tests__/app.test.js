@@ -68,34 +68,34 @@ describe("GET /api/", () => {
 
             expect(articles).toBeSortedBy("created_at", { descending: true });
         });
-      
+
     });
-    describe("/articles?sort_by=:column_name?order=desc",() => {
-        test("200: status code responds with article array sorted by given column name, defaults to descending order",async () => {
-            const {status,body:{articles}} = await request(app).get("/api/articles?sort_by=title") 
-            
-            expect(status).toBe(200)
-            expect(articles).toBeSortedBy("title",{descending:true})
-        })
-        test("200: status code responds with article array sorted by given column name ordered by given order",async () => {
-            const {status,body:{articles}} = await request(app).get("/api/articles?sort_by=title&order=asc")  
+    describe("/articles?sort_by=:column_name?order=desc", () => {
+        test("200: status code responds with article array sorted by given column name, defaults to descending order", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles?sort_by=title");
 
-            expect(status).toBe(200)
-            expect(articles).toBeSortedBy("title",{descending:false})
-        })
-        test("400: status code responds with error message when given invalid sort_by query",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles?sort_by=age")  
+            expect(status).toBe(200);
+            expect(articles).toBeSortedBy("title", { descending: true });
+        });
+        test("200: status code responds with article array sorted by given column name ordered by given order", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles?sort_by=title&order=asc");
 
-            expect(status).toBe(400)
-            expect(message).toBe("age is not a valid sort_by value")
-        })
-        test("400: status code responds with error message when given invalid order query",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles?sort_by=votes&order=up")  
+            expect(status).toBe(200);
+            expect(articles).toBeSortedBy("title", { descending: false });
+        });
+        test("400: status code responds with error message when given invalid sort_by query", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles?sort_by=age");
 
-            expect(status).toBe(400)
-            expect(message).toBe("up is not a valid order value")
-        })
-    })
+            expect(status).toBe(400);
+            expect(message).toBe("age is not a valid sort_by value");
+        });
+        test("400: status code responds with error message when given invalid order query", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles?sort_by=votes&order=up");
+
+            expect(status).toBe(400);
+            expect(message).toBe("up is not a valid order value");
+        });
+    });
     describe("/articles/:article_id", () => {
         test("200: status code and responds with object corresponding to article_id", async () => {
             const { status, body: { article } } = await request(app).get("/api/articles/1");
@@ -124,12 +124,12 @@ describe("GET /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("banana is an invalid article_id (number)");
         });
-        test("200: status code article should include comment_count property",async () => {
-            const {status,body:{article}} = await request(app).get("/api/articles/1")
-            
-            expect(status).toBe(200)
-            expect(article.comment_count).toBe(11)
-        })
+        test("200: status code article should include comment_count property", async () => {
+            const { status, body: { article } } = await request(app).get("/api/articles/1");
+
+            expect(status).toBe(200);
+            expect(article.comment_count).toBe(11);
+        });
     });
     describe("/articles/:article_id/comments", () => {
         test("200: status code responds with an array of comments for the given article_id", async () => {
@@ -174,9 +174,9 @@ describe("GET /api/", () => {
         });
 
     });
-    describe("/articles/?topic=:topic",() => {
-        test("200: status code responds with articles filtered by given topic",async () => {
-            const {status,body:{articles}} = await request(app).get("/api/articles/?topic=mitch")
+    describe("/articles/?topic=:topic", () => {
+        test("200: status code responds with articles filtered by given topic", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles/?topic=mitch");
             const expectedArticle = {
                 "author": expect.any(String),
                 "title": expect.any(String),
@@ -187,25 +187,25 @@ describe("GET /api/", () => {
                 "article_img_url": expect.any(String),
                 "comment_count": expect.any(String)
             };
-            
-            expect(status).toBe(200)
-            expect(articles.length).toBe(12)
-            articles.forEach((article)=> {
-                expect(article).toMatchObject(expectedArticle)
-            })
-        })
-        test("200: status code responds with empty array when there are no articles with that topic",async () => {
-            const {status,body:{articles}} = await request(app).get("/api/articles/?topic=paper")
-            expect(status).toBe(200)
-            expect(articles).toEqual([])
-        })
-        test("404: status code when topic is not found",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/?topic=news")
-            
-            expect(status).toBe(404)
-            expect(message).toBe("news topic not found!")
-        })
-    })
+
+            expect(status).toBe(200);
+            expect(articles.length).toBe(12);
+            articles.forEach((article) => {
+                expect(article).toMatchObject(expectedArticle);
+            });
+        });
+        test("200: status code responds with empty array when there are no articles with that topic", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles/?topic=paper");
+            expect(status).toBe(200);
+            expect(articles).toEqual([]);
+        });
+        test("404: status code when topic is not found", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/?topic=news");
+
+            expect(status).toBe(404);
+            expect(message).toBe("news topic not found!");
+        });
+    });
     describe("/users", () => {
         test("200: status code responds with an array of objects containing all users information", async () => {
             const { status, body: { users } } = await request(app).get("/api/users");
@@ -215,11 +215,30 @@ describe("GET /api/", () => {
                 avatar_url: expect.any(String)
             };
             expect(status).toBe(200);
-            expect(users.length).toBe(4)
+            expect(users.length).toBe(4);
             users.forEach((user) => {
                 expect(user).toMatchObject(expectedUser);
             });
 
+        });
+        describe("/:username", () => {
+            test("200: status code responds with object containing information about given username", async () => {
+                const { status, body: { user } } = await request(app).get("/api/users/butter_bridge");
+                const expectedUser = {
+                    username: "butter_bridge",
+                    avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+                    name: "jonny"
+                };
+
+                expect(status).toBe(200);
+                expect(user).toMatchObject(expectedUser);
+            });
+            test("404: status code responds with error message when username not found", async () => {
+                const { status, body: { message } } = await request(app).get("/api/users/banana");
+
+                expect(status).toBe(404);
+                expect(message).toBe("banana not found!");
+            });
         });
     });
 });
@@ -336,7 +355,7 @@ describe("PATCH /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("Invalid request! Missing information!");
         });
-        
+
         test("400: status code when body of request has value of invalid type", async () => {
             const newVote = { inc_votes: "apples" };
             const { status, body: { message } } = await request(app).patch("/api/articles/1").send(newVote);

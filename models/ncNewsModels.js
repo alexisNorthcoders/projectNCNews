@@ -1,3 +1,4 @@
+const { use } = require('../app');
 const db = require('../db/connection');
 
 exports.fetchAllTopics = () => {
@@ -101,4 +102,14 @@ exports.fetchUsers = () => {
     return db.query(`SELECT * FROM users`).then(({ rows }) => {
         return rows;
     });
+};
+exports.fetchUserByUsername = (username) => {
+    const query = `SELECT * FROM users WHERE username = $1`;
+    const queryParams = [username];
+
+    return db.query(query, queryParams).then(({rows}) => {
+      if (rows.length === 0) {
+        return Promise.reject({statusCode:404, message:`${username} not found!`})
+      }
+        return rows[0] })
 };
