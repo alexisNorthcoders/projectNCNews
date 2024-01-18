@@ -75,7 +75,8 @@ exports.patchVotesByArticleId = (req, res, next) => {
         res.status(200).send({ article });
     })
         .catch(err => {
-            err.inc_votes = inc_votes;
+            err.patcharticle_id = article_id
+            err.inc_votes = inc_votes
             return next(err);
         });
 };

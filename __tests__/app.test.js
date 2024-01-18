@@ -309,12 +309,20 @@ describe("PATCH /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("Invalid request! Missing information!");
         });
+        
         test("400: status code when body of request has value of invalid type", async () => {
             const newVote = { inc_votes: "apples" };
             const { status, body: { message } } = await request(app).patch("/api/articles/1").send(newVote);
 
             expect(status).toBe(400);
-            expect(message).toBe("apples is an invalid inc_votes (number)");
+            expect(message).toBe("apples(inc_votes) is an invalid type (number)");
+        });
+        test("400: status code when article_id has wrong data type", async () => {
+            const newVote = { inc_votes: 10 };
+            const { status, body: { message } } = await request(app).patch("/api/articles/news/").send(newVote);
+
+            expect(status).toBe(400);
+            expect(message).toBe("news is an invalid article_id (number)");
         });
 
     });
