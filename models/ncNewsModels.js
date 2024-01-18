@@ -82,9 +82,9 @@ RETURNING *`;
         if (rows.length === 0) {
             return Promise.reject({ statusCode: 404, message: `Couldn't find article_id ${article_id}!` });
         }
-        else {
-            return rows[0];
-        }
+
+        return rows[0];
+
     });
 };
 exports.removeCommentByCommentId = (comment_id) => {
