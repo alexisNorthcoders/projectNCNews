@@ -107,21 +107,43 @@ exports.fetchUserByUsername = (username) => {
     const query = `SELECT * FROM users WHERE username = $1`;
     const queryParams = [username];
 
-    return db.query(query, queryParams).then(({rows}) => {
-      if (rows.length === 0) {
-        return Promise.reject({statusCode:404, message:`${username} not found!`})
-      }
-        return rows[0] })
-};
-exports.updateCommentByCommentId = (inc_votes,comment_id) => {
-    const query = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`
-    const queryParams = [inc_votes,comment_id]
-
-    return db.query(query,queryParams).then(({rows})=>{
+    return db.query(query, queryParams).then(({ rows }) => {
         if (rows.length === 0) {
-            return Promise.reject({statusCode:404, message:`comment_id ${comment_id} not found!`})
-          }
-        return rows[0]
-    })
+            return Promise.reject({ statusCode: 404, message: `${username} not found!` });
+        }
+        return rows[0];
+    });
+};
+exports.updateCommentByCommentId = (inc_votes, comment_id) => {
+    const query = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`;
+    const queryParams = [inc_votes, comment_id];
+
+    return db.query(query, queryParams).then(({ rows }) => {
+        if (rows.length === 0) {
+            return Promise.reject({ statusCode: 404, message: `comment_id ${comment_id} not found!` });
+        }
+        return rows[0];
+    });
+};
+exports.insertArticle = (article) => {
+
+    let query = `INSERT INTO articles (author,title,body,topic `;
+    const queryParams = [article.author, article.title, article.body, article.topic];
+    if (article.article_img_url) {
+        queryParams.push(article.article_img_url);
+        query += `,article_img_url`;
+    }
+    query += `) VALUES ($1, $2, $3 ,$4 `;
+    if (article.article_img_url) {
+
+        query += `,$5`;
+    }
+    query += `) RETURNING * `;
+
+
+
+    return db.query(query, queryParams).then(({ rows }) => {
+        return rows[0];
+    });
 }
 

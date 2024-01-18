@@ -298,6 +298,42 @@ describe("POST /api/", () => {
             expect(message).toBe("Invalid request! Missing information!");
         });
     });
+    describe("/articles/", () => {
+        test("200: status code and respondes with body of article inserted", async () => {
+            const { status, body: { article } } = await request(app).post("/api/articles").send({ author: "butter_bridge", title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "cats" });
+            const expectedArticle = {
+                author: "butter_bridge",
+                title: "Amazing Cats",
+                body: "This article is worth reading. Bla Bla Bla.",
+                topic: "cats",
+                article_id: 14,
+                votes: 0,
+                created_at: expect.any(String),
+                comment_count: 0
+            };
+            
+            expect(status).toBe(201);
+            expect(article).toMatchObject(expectedArticle);
+        });
+        test("404: status code when author not found",async () => {
+            const { status, body: { message } } = await request(app).post("/api/articles").send({ author: "butter_toast", title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "cats" });
+
+            expect(status).toBe(404)
+            expect(message).toBe("Couldn't find author butter_toast")
+        })
+        test("404: status code when topic not found",async () => {
+            const { status, body: { message } } = await request(app).post("/api/articles").send({ author: "butter_bridge", title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "dogs" });
+
+            expect(status).toBe(404)
+            expect(message).toBe("Couldn't find topic dogs")
+        })
+        test("400: status code when missing information",async () => {
+            const { status, body: { message } } = await request(app).post("/api/articles").send({ title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "cats" });
+
+            expect(status).toBe(400)
+            expect(message).toBe("Invalid request! Missing information!")
+        })
+    });
 });
 describe("PATCH /api/", () => {
     describe("/articles/:article_id", () => {

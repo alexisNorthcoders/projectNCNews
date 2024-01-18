@@ -38,6 +38,13 @@ app.use((err, req, res, next) => {
         else if (err.username) {
             res.status(404).send({ message: `Couldn't find username ${err.username}!` });
         }
+        else if (err.topic && err.detail.includes("topic")){
+            res.status(404).send({message :`Couldn't find topic ${err.topic}`})
+        }
+        else if (err.author){
+            res.status(404).send({message :`Couldn't find author ${err.author}`})
+        }
+       
     }
     else if (err.code === "23502") {
         res.status(400).send({ message: "Invalid request! Missing information!" });

@@ -1,5 +1,5 @@
 const { checkTopicExists } = require("../db/seeds/utils");
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId, insertArticle } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -114,9 +114,25 @@ exports.patchCommentsByCommentId = (req, res, next) => {
     updateCommentByCommentId(inc_votes, comment_id).then((comment) => {
         res.status(200).send({ comment });
     })
-    .catch(err => {
-        err.comment_id = comment_id
-        err.inc_votes = inc_votes
-        return next(err)
+        .catch(err => {
+            err.comment_id = comment_id;
+            err.inc_votes = inc_votes;
+            return next(err);
+        });
+};
+exports.postArticle = (req, res, next) => {
+
+    const article = req.body;
+
+    insertArticle(article).then((article) => {
+        fetchArticleById(article.article_id).then((article) => {
+            res.status(201).send({ article });
+        });
+
     })
+        .catch(err => {
+            err.author = article.author
+            err.topic = article.topic
+            return next(err);
+        });
 };
