@@ -68,7 +68,34 @@ describe("GET /api/", () => {
 
             expect(articles).toBeSortedBy("created_at", { descending: true });
         });
+      
     });
+    describe("/articles?sort_by=:column_name?order=desc",() => {
+        test("200: status code responds with article array sorted by given column name, defaults to descending order",async () => {
+            const {status,body:{articles}} = await request(app).get("/api/articles?sort_by=title") 
+            
+            expect(status).toBe(200)
+            expect(articles).toBeSortedBy("title",{descending:true})
+        })
+        test("200: status code responds with article array sorted by given column name ordered by given order",async () => {
+            const {status,body:{articles}} = await request(app).get("/api/articles?sort_by=title&order=asc")  
+
+            expect(status).toBe(200)
+            expect(articles).toBeSortedBy("title",{descending:false})
+        })
+        test("400: status code responds with error message when given invalid sort_by query",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles?sort_by=age")  
+
+            expect(status).toBe(400)
+            expect(message).toBe("age is not a valid sort_by value")
+        })
+        test("400: status code responds with error message when given invalid order query",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles?sort_by=votes&order=up")  
+
+            expect(status).toBe(400)
+            expect(message).toBe("up is not a valid order value")
+        })
+    })
     describe("/articles/:article_id", () => {
         test("200: status code and responds with object corresponding to article_id", async () => {
             const { status, body: { article } } = await request(app).get("/api/articles/1");
