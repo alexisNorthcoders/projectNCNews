@@ -56,7 +56,7 @@ describe("GET /api/", () => {
             };
 
             expect(status).toBe(200);
-            expect(articles.length).toBe(13);
+            expect(articles.length).not.toBe(0);
             articles.forEach((article) => {
                 expect(article).toMatchObject(expectedArticleType);
             });
@@ -68,6 +68,18 @@ describe("GET /api/", () => {
 
             expect(articles).toBeSortedBy("created_at", { descending: true });
         });
+        test("200: responses are limited by 10 (default)", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles");
+            
+            expect(status).toBe(200);
+            expect(articles.length).toBe(10);
+        });
+        test("200: responses can be limited by a query limit",async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles/?limit=5");
+            
+            expect(status).toBe(200);
+            expect(articles.length).toBe(5);
+        })
 
     });
     describe("/articles?sort_by=:column_name?order=desc", () => {
@@ -189,7 +201,7 @@ describe("GET /api/", () => {
             };
 
             expect(status).toBe(200);
-            expect(articles.length).toBe(12);
+            expect(articles.length).not.toBe(0);
             articles.forEach((article) => {
                 expect(article).toMatchObject(expectedArticle);
             });
@@ -311,28 +323,28 @@ describe("POST /api/", () => {
                 created_at: expect.any(String),
                 comment_count: 0
             };
-            
+
             expect(status).toBe(201);
             expect(article).toMatchObject(expectedArticle);
         });
-        test("404: status code when author not found",async () => {
+        test("404: status code when author not found", async () => {
             const { status, body: { message } } = await request(app).post("/api/articles").send({ author: "butter_toast", title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "cats" });
 
-            expect(status).toBe(404)
-            expect(message).toBe("Couldn't find author butter_toast")
-        })
-        test("404: status code when topic not found",async () => {
+            expect(status).toBe(404);
+            expect(message).toBe("Couldn't find author butter_toast");
+        });
+        test("404: status code when topic not found", async () => {
             const { status, body: { message } } = await request(app).post("/api/articles").send({ author: "butter_bridge", title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "dogs" });
 
-            expect(status).toBe(404)
-            expect(message).toBe("Couldn't find topic dogs")
-        })
-        test("400: status code when missing information",async () => {
+            expect(status).toBe(404);
+            expect(message).toBe("Couldn't find topic dogs");
+        });
+        test("400: status code when missing information", async () => {
             const { status, body: { message } } = await request(app).post("/api/articles").send({ title: "Amazing Cats", body: "This article is worth reading. Bla Bla Bla.", topic: "cats" });
 
-            expect(status).toBe(400)
-            expect(message).toBe("Invalid request! Missing information!")
-        })
+            expect(status).toBe(400);
+            expect(message).toBe("Invalid request! Missing information!");
+        });
     });
 });
 describe("PATCH /api/", () => {

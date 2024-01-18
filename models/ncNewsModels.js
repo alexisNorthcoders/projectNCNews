@@ -27,15 +27,19 @@ exports.fetchArticleById = (article_id) => {
             }
         });
 };
-exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC") => {
+exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,p) => {
     const validSortQueries = ["author", "title", "article_id", "topic", "created_at", "votes", "comment_count"];
     const validOrderQueries = ["asc", "desc"];
+    
     if (!validSortQueries.includes(sort_by)) {
 
         return Promise.reject({ statusCode: 400, message: `${sort_by} is not a valid sort_by value` });
     }
     if (!validOrderQueries.includes(order.toLowerCase())) {
         return Promise.reject({ statusCode: 400, message: `${order} is not a valid order value` });
+    }
+    if (typeof parseInt(limit) !== "number"){
+        return Promise.reject({ statusCode: 400, message: `${limit} is not a valid limit value` });
     }
     const queryParams = [];
     let query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
@@ -49,6 +53,8 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC") => {
     }
     query += ` GROUP BY articles.article_id
                ORDER BY articles.${sort_by} ${order}`;
+
+    query += ` LIMIT ${limit}`
 
 
     return db.query(query, queryParams)
