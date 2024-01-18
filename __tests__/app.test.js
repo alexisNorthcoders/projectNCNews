@@ -355,7 +355,6 @@ describe("PATCH /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("Invalid request! Missing information!");
         });
-
         test("400: status code when body of request has value of invalid type", async () => {
             const newVote = { inc_votes: "apples" };
             const { status, body: { message } } = await request(app).patch("/api/articles/1").send(newVote);
@@ -372,9 +371,9 @@ describe("PATCH /api/", () => {
         });
 
     });
-    describe("/comments/:comment_id",() => {
-        test("200: status code increases or decreases votes property and responds with updated comment",async () => {
-            const {status,body:{comment}} = await request(app).patch("/api/comments/1").send({inc_votes: -1})
+    describe("/comments/:comment_id", () => {
+        test("200: status code increases or decreases votes property and responds with updated comment", async () => {
+            const { status, body: { comment } } = await request(app).patch("/api/comments/1").send({ inc_votes: -1 });
             const expectedComment = {
                 comment_id: 1,
                 votes: 15,
@@ -382,30 +381,30 @@ describe("PATCH /api/", () => {
                 author: "butter_bridge",
                 body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
                 article_id: 9
-            }
+            };
 
-            expect(status).toBe(200)
-            expect(comment).toMatchObject(expectedComment)
-        })
-        test("404: status code when comment not found",async () => {
-            const {status,body:{message}} = await request(app).patch("/api/comments/999").send({inc_votes:9000}) 
+            expect(status).toBe(200);
+            expect(comment).toMatchObject(expectedComment);
+        });
+        test("404: status code when comment not found", async () => {
+            const { status, body: { message } } = await request(app).patch("/api/comments/999").send({ inc_votes: 9000 });
 
-            expect(status).toBe(404)
-            expect(message).toBe("comment_id 999 not found!")
-        })
-        test("400: status code when comment is invalid",async () => {
-            const {status,body:{message}} = await request(app).patch("/api/comments/banana").send({inc_votes:9000})
+            expect(status).toBe(404);
+            expect(message).toBe("comment_id 999 not found!");
+        });
+        test("400: status code when comment is invalid", async () => {
+            const { status, body: { message } } = await request(app).patch("/api/comments/banana").send({ inc_votes: 9000 });
 
-            expect(status).toBe(400)
-            expect(message).toBe("banana is an invalid comment_id (number)")
-        })
-        test("400: status code when inc_votes is invalid type",async () => {
-            const {status,body:{message}}= await request(app).patch("/api/comments/1").send({inc_votes:"thumbs up"}) 
+            expect(status).toBe(400);
+            expect(message).toBe("banana is an invalid comment_id (number)");
+        });
+        test("400: status code when inc_votes is invalid type", async () => {
+            const { status, body: { message } } = await request(app).patch("/api/comments/1").send({ inc_votes: "thumbs up" });
 
-            expect(status).toBe(400)
-            expect(message).toBe("thumbs up(inc_votes) is an invalid type (number)")
-        })
-    })
+            expect(status).toBe(400);
+            expect(message).toBe("thumbs up(inc_votes) is an invalid type (number)");
+        });
+    });
 });
 describe("DELETE /api/", () => {
     describe("/comments/:comment_id", () => {
