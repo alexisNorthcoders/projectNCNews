@@ -101,7 +101,7 @@ describe("GET /api/", () => {
             const {status,body:{article}} = await request(app).get("/api/articles/1")
             
             expect(status).toBe(200)
-            expect(article.comment_count).toBe("11")
+            expect(article.comment_count).toBe(11)
         })
     });
     describe("/articles/:article_id/comments", () => {

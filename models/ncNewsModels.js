@@ -9,7 +9,7 @@ exports.fetchAllTopics = () => {
 exports.fetchArticleById = (article_id) => {
     const queryParams = [article_id];
     const query = `SELECT articles.*,
-    COUNT(comments.article_id) AS comment_count
+    CAST(COUNT(comments.article_id) AS int) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id
     WHERE articles.article_id = $1
