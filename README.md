@@ -9,11 +9,11 @@ You can explore the live version of the application here: [NC News Live](https:/
 ## Project Summary
 
 NC News is a backend application designed to simulate a real-world social media platform for sharing and discussing articles (like reddit). 
-It is built in JavaScript using node-postgres, Express and PostgreSQL to provide the API endpoints to allow to access a database.
+It is built in JavaScript using node.js, Express and PostgreSQL to provide the API endpoints to allow to access a database.
 
 The API is hosted on Render and the database is on ElephantSQL.
 
-This project was built using TDD methodology and MVC (Model-View-Controller) in mind.
+This project was built using TDD methodology and has a MVC (Model-View-Controller) architecture.
 
 ## Getting Started
 
