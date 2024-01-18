@@ -113,3 +113,15 @@ exports.fetchUserByUsername = (username) => {
       }
         return rows[0] })
 };
+exports.updateCommentByCommentId = (inc_votes,comment_id) => {
+    const query = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`
+    const queryParams = [inc_votes,comment_id]
+
+    return db.query(query,queryParams).then(({rows})=>{
+        if (rows.length === 0) {
+            return Promise.reject({statusCode:404, message:`comment_id ${comment_id} not found!`})
+          }
+        return rows[0]
+    })
+}
+

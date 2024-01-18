@@ -1,13 +1,13 @@
 const { checkTopicExists } = require("../db/seeds/utils");
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
     fetchAllTopics()
         .then((topics) => res.status(200).send({ topics }))
-        .catch((err) => 
-        {
-        return next(err)});
+        .catch((err) => {
+            return next(err);
+        });
 };
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
@@ -20,23 +20,23 @@ exports.getArticleById = (req, res, next) => {
         });
 };
 exports.getArticles = (req, res, next) => {
-    const {topic} = req.query
-    const {sort_by,order} = req.query
-    
-    const fetchArticlesQuery = fetchArticles(topic,sort_by,order)
-    const allQueries = [fetchArticlesQuery]
-    
-    if (topic) {  
-        const topicExistsQuery = checkTopicExists(topic)
-        allQueries.push(topicExistsQuery)
+    const { topic } = req.query;
+    const { sort_by, order } = req.query;
+
+    const fetchArticlesQuery = fetchArticles(topic, sort_by, order);
+    const allQueries = [fetchArticlesQuery];
+
+    if (topic) {
+        const topicExistsQuery = checkTopicExists(topic);
+        allQueries.push(topicExistsQuery);
     }
-    
+
     Promise.all(allQueries)
-    .then((response) => {
-        const articles = response[0]
-        res.status(200).send({ articles });
-    })
-    .catch(err => next(err))
+        .then((response) => {
+            const articles = response[0];
+            res.status(200).send({ articles });
+        })
+        .catch(err => next(err));
 };
 exports.getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;
@@ -77,8 +77,8 @@ exports.patchVotesByArticleId = (req, res, next) => {
         res.status(200).send({ article });
     })
         .catch(err => {
-            err.patcharticle_id = article_id
-            err.inc_votes = inc_votes
+            err.patcharticle_id = article_id;
+            err.inc_votes = inc_votes;
             return next(err);
         });
 };
@@ -94,14 +94,29 @@ exports.deleteCommentByCommentId = (req, res, next) => {
 };
 exports.getUsers = (req, res, next) => {
     fetchUsers()
-    .then((users)=> {res.status(200).send({users})})
-    .catch((err)=> {return next(err)})
+        .then((users) => { res.status(200).send({ users }); })
+        .catch((err) => { return next(err); });
 };
-exports.getUserByUsername = (req,res,next) => {
-    const {username} = req.params
-    
+exports.getUserByUsername = (req, res, next) => {
+    const { username } = req.params;
+
     fetchUserByUsername(username).then((user) => {
-    
-    res.status(200).send({user})})
-    .catch(err => next(err))
-}
+
+        res.status(200).send({ user });
+    })
+        .catch(err => next(err));
+};
+exports.patchCommentsByCommentId = (req, res, next) => {
+    const { comment_id } = req.params;
+    const { inc_votes } = req.body;
+
+
+    updateCommentByCommentId(inc_votes, comment_id).then((comment) => {
+        res.status(200).send({ comment });
+    })
+    .catch(err => {
+        err.comment_id = comment_id
+        err.inc_votes = inc_votes
+        return next(err)
+    })
+};

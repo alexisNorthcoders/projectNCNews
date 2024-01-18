@@ -15,16 +15,19 @@ app.all("/*", (req, res, next) => {
 app.use((err, req, res, next) => {
     
     if (err.code === "22P02") {
-        if (err.patcharticle_id && err.where.includes("$2")) {
+        if (err.patcharticle_id && !err.where.includes("$1")) {
+            
             res.status(400).send({ message: `${err.patcharticle_id} is an invalid article_id (number)` });
         }
-        else if (err.inc_votes) {
+        else if (err.inc_votes && !err.where.includes("$2")) {
+            
             res.status(400).send({ message: `${err.inc_votes}(inc_votes) is an invalid type (number)` });
         }
         else if (err.article_id ) {
             res.status(400).send({ message: `${err.article_id} is an invalid article_id (number)` });
         }
         else if (err.comment_id) {
+            
             res.status(400).send({ message: `${err.comment_id} is an invalid comment_id (number)` });
         }
     }
