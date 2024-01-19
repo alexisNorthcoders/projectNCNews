@@ -22,7 +22,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by created_at in descending order",
-    "queries": ["sort_by", "order"],
+    "queries": ["sort_by", "order","limit","p"],
     "exampleResponse": {
       "articles": [
         {

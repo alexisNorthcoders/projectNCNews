@@ -21,9 +21,9 @@ exports.getArticleById = (req, res, next) => {
 };
 exports.getArticles = (req, res, next) => {
     const { topic } = req.query;
-    const { sort_by, order,limit,p } = req.query;
+    const { sort_by, order, limit, p } = req.query;
 
-    const fetchArticlesQuery = fetchArticles(topic, sort_by, order,limit,p);
+    const fetchArticlesQuery = fetchArticles(topic, sort_by, order, limit, p);
     const allQueries = [fetchArticlesQuery];
 
     if (topic) {
@@ -40,8 +40,10 @@ exports.getArticles = (req, res, next) => {
 };
 exports.getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;
+    const { limit, p } = req.query;
+    
     const articleExistsQuery = fetchArticleById(article_id);
-    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id);
+    const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id, limit, p);
     Promise.all([articleExistsQuery, commentsByArticleIdQuery])
         .then((response) => {
             const comments = response[1];
@@ -131,8 +133,8 @@ exports.postArticle = (req, res, next) => {
 
     })
         .catch(err => {
-            err.author = article.author
-            err.topic = article.topic
+            err.author = article.author;
+            err.topic = article.topic;
             return next(err);
         });
 };

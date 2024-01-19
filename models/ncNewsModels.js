@@ -27,11 +27,13 @@ exports.fetchArticleById = (article_id) => {
             }
         });
 };
-exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,p=1) => {
+exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit=10, p = 1) => {
     const validSortQueries = ["author", "title", "article_id", "topic", "created_at", "votes", "comment_count"];
     const validOrderQueries = ["asc", "desc"];
-    const offset = limit * (p-1)
-    
+    if (limit === "") { limit = 10; }
+    if (p === "") { p = 1; }
+    const offset = limit * (p - 1);
+
     if (!validSortQueries.includes(sort_by)) {
 
         return Promise.reject({ statusCode: 400, message: `${sort_by} is not a valid sort_by value` });
@@ -39,10 +41,10 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,
     if (!validOrderQueries.includes(order.toLowerCase())) {
         return Promise.reject({ statusCode: 400, message: `${order} is not a valid order value` });
     }
-    if (typeof parseInt(limit) !== "number"){
+    if (typeof parseInt(limit) !== "number") {
         return Promise.reject({ statusCode: 400, message: `${limit} is not a valid limit value` });
     }
-    if (typeof parseInt(p) !== "number"){
+    if (typeof parseInt(p) !== "number") {
         return Promise.reject({ statusCode: 400, message: `${p} is not a valid page value` });
     }
     const queryParams = [];
@@ -58,21 +60,32 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,
     query += ` GROUP BY articles.article_id
                ORDER BY articles.${sort_by} ${order}`;
 
-    query += ` LIMIT ${limit}`
+    query += ` LIMIT ${limit}`;
 
-    if (p){
-        query += ` OFFSET ${offset}`
+    if (p) {
+        query += ` OFFSET ${offset}`;
     }
 
 
     return db.query(query, queryParams)
         .then(({ rows }) => rows);
 };
-exports.fetchCommentsByArticleId = (article_id) => {
+exports.fetchCommentsByArticleId = (article_id, limit = 10, p = 1) => {
     const queryParams = [article_id];
-    const query = `SELECT * FROM comments
+    if (limit === "") { limit = 10; }
+    if (p === "") { p = 1; }
+    const offset = limit * (p - 1);
+    let query = `SELECT * FROM comments
     WHERE comments.article_id = $1
     ORDER BY comments.created_at DESC`;
+
+
+    if (limit) {
+        query += ` LIMIT ${limit}`;
+    }
+    if (p) {
+        query += ` OFFSET ${offset}`;
+    }
     return db.query(query, queryParams).then(({ rows }) => {
 
         return rows;

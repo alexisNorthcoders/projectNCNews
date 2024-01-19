@@ -195,7 +195,7 @@ describe("GET /api/", () => {
                 article_id: 1
             };
             expect(status).toBe(200);
-            expect(comments.length).toBe(11);
+            expect(comments.length).toBe(10);
             comments.forEach((comment) => {
                 expect(comment).toMatchObject(expectedCommentsTypes);
             });
@@ -223,6 +223,57 @@ describe("GET /api/", () => {
             expect(status).toBe(400);
             expect(message).toBe("apple is an invalid article_id (number)");
         });
+        test("200: responses are limited to 10 by default", async () => {
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments");
+            
+            expect(status).toBe(200);
+            expect(comments.length).toBe(10);
+        });
+        test("200: responses can be limited by a query limit",async () => {
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments/?limit=5");
+            
+            expect(status).toBe(200);
+            expect(comments.length).toBe(5);
+        })
+        test("200: responses can be offset by giving page value p",async () => {
+            const {status, body:{comments}} = await request(app).get("/api/articles/1/comments/?limit=1&p=2")
+            const expectedComment = {
+                "comment_id": 2,
+                "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+                "article_id": 1,
+                "author":"butter_bridge",
+                "created_at": expect.any(String),
+                "votes": 14,
+                
+            };
+            
+            expect(status).toBe(200)
+            expect(comments.length).toBe(1)
+            comments.forEach((comment)=>{
+                expect(comment).toMatchObject(expectedComment)
+            })
+
+        })
+        test("200: responds with empty array when page is empty",async () => {
+            const {status,body:{comments}} = await request(app).get("/api/articles/1/comments/?limit&p=10")
+            
+            expect(status).toBe(200)
+            expect(comments).toEqual([])
+            
+        })
+        test("400: status code when limit is invalid type",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/1/comments/?limit=a&p=2")
+
+            expect(status).toBe(400)
+            expect(message).toBe("Bad request!")
+        })
+        test("400: status code when page is invalid type",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/1/comments/?limit=1&p=a")
+
+            expect(status).toBe(400)
+            expect(message).toBe("Bad request!")
+        })
+      
 
     });
     describe("/articles/?topic=:topic", () => {
