@@ -1,5 +1,5 @@
 const { checkTopicExists } = require("../db/seeds/utils");
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId, insertArticle, insertTopic } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId, insertArticle, insertTopic, removeArticle } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -41,7 +41,7 @@ exports.getArticles = (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;
     const { limit, p } = req.query;
-    
+
     const articleExistsQuery = fetchArticleById(article_id);
     const commentsByArticleIdQuery = fetchCommentsByArticleId(article_id, limit, p);
     Promise.all([articleExistsQuery, commentsByArticleIdQuery])
@@ -138,13 +138,25 @@ exports.postArticle = (req, res, next) => {
             return next(err);
         });
 };
-exports.postTopic = (req,res,next) => {
-    const topic = req.body
+exports.postTopic = (req, res, next) => {
+    const topic = req.body;
 
     insertTopic(topic).then((topic) => {
-        res.status(201).send({topic})
+        res.status(201).send({ topic });
     }).catch(err => {
-        err.topic = topic.slug
+        err.topic = topic.slug;
         return next(err);
     });
-}
+};
+exports.deleteArticle = async (req, res, next) => {
+    const { article_id } = req.params;
+    
+    try {
+        await removeArticle(article_id);
+        
+        res.status(204).send();
+    }
+    catch (err){ 
+        err.article_id=article_id
+        return next(err)}
+};

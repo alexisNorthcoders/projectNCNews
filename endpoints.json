@@ -138,5 +138,9 @@
   "DELETE /api/comments/:comment_id": {
     "description": "deletes comment for specific comment_id",
     "exampleResponse": {}
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes article given article_id",
+    "exampleResponse": {}
   }
 }

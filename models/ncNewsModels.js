@@ -180,3 +180,13 @@ exports.insertTopic = (topic) => {
         return rows[0];
     });
 }
+exports.removeArticle = async (article_id) => {
+    const query = `DELETE FROM articles WHERE article_id = $1`
+
+    const {rowCount} = await db.query(query,[article_id])
+    
+    if (rowCount === 0) {
+        return Promise.reject({ statusCode: 404, message: "Article not found!" });
+    }
+  
+}

@@ -436,7 +436,7 @@ describe("POST /api/", () => {
             expect(message).toBe("Invalid request! Missing information!");
         });
     });
-    describe.only("/topics/", () => {
+    describe("/topics/", () => {
         test("201: status code responds with new added topic", async () => {
             const { status, body: { topic } } = await request(app).post("/api/topics").send({
                 "slug": "dogs",
@@ -595,6 +595,27 @@ describe("DELETE /api/", () => {
 
             expect(status).toBe(400);
             expect(message).toBe("banana is an invalid comment_id (number)");
+        });
+
+    });
+    describe("/articles/:article_id", () => {
+        test("204: status code responds with no content", async () => {
+            const { status } = await request(app).delete("/api/articles/1");
+
+            expect(status).toBe(204);
+        });
+        test("404: status code when trying to delete non-existent article", async () => {
+            await request(app).delete("/api/articles/1");
+            const { status, body: { message } } = await request(app).delete("/api/articles/1");
+
+            expect(status).toBe(404);
+            expect(message).toBe("Article not found!");
+        });        
+        test("400: status code when trying to delete article given wrong type", async () => {
+            const { status, body: { message } } = await request(app).delete("/api/articles/banana");
+
+            expect(status).toBe(400);
+            expect(message).toBe("banana is an invalid article_id (number)");
         });
 
     });
