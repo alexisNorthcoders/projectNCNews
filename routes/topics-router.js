@@ -2,8 +2,9 @@ const { getTopics, postTopic } = require('../controllers/ncNewsControllers');
 
 const topicsRouter = require('express').Router();
 
-topicsRouter.get("/", getTopics);
+topicsRouter
+    .route("/")
+    .get(getTopics)
+    .post(postTopic);
 
-topicsRouter.post("/", postTopic)
-
-module.exports = topicsRouter
+module.exports = topicsRouter;

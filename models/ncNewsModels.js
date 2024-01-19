@@ -1,4 +1,3 @@
-const { use } = require('../app');
 const db = require('../db/connection');
 
 exports.fetchAllTopics = () => {
@@ -48,7 +47,7 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit=10
         return Promise.reject({ statusCode: 400, message: `${p} is not a valid page value` });
     }
     const queryParams = [];
-    let query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
+     let query = `SELECT count(*) OVER() AS total_count,articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
     COUNT(comments.article_id) AS comment_count 
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id`;
@@ -65,8 +64,9 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit=10
     if (p) {
         query += ` OFFSET ${offset}`;
     }
-
-
+ 
+/* let query = `SELECT count(*) OVER() AS total_count
+FROM table` */
     return db.query(query, queryParams)
         .then(({ rows }) => rows);
 };

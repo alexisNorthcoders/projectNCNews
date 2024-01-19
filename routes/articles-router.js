@@ -2,15 +2,18 @@ const { getArticles, getArticleById, getCommentsByArticleId, patchVotesByArticle
 
 const articlesRouter = require('express').Router();
 
-articlesRouter.get("/", getArticles);
-articlesRouter.get("/:article_id",getArticleById)
-articlesRouter.get("/:article_id/comments", getCommentsByArticleId);
+articlesRouter
+    .route("/")
+    .get(getArticles)
+    .post(postArticle);
+articlesRouter
+    .route("/:article_id")
+    .get(getArticleById)
+    .patch(patchVotesByArticleId)
+    .delete(deleteArticle);
+articlesRouter
+    .route("/:article_id/comments")
+    .get(getCommentsByArticleId)
+    .post(postCommentByArticleId);
 
-articlesRouter.patch("/:article_id", patchVotesByArticleId);
-
-articlesRouter.post("/:article_id/comments", postCommentByArticleId);
-articlesRouter.post("/", postArticle);
-
-articlesRouter.delete("/:article_id",deleteArticle)
-
-module.exports = articlesRouter
+module.exports = articlesRouter;
