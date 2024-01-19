@@ -68,7 +68,7 @@ describe("GET /api/", () => {
 
             expect(articles).toBeSortedBy("created_at", { descending: true });
         });
-        test("200: responses are limited by 10 (default)", async () => {
+        test("200: responses are limited to 10 by default", async () => {
             const { status, body: { articles } } = await request(app).get("/api/articles");
             
             expect(status).toBe(200);
@@ -79,6 +79,45 @@ describe("GET /api/", () => {
             
             expect(status).toBe(200);
             expect(articles.length).toBe(5);
+        })
+        test("200: responses can be offset by giving page value p",async () => {
+            const {status, body:{articles}} = await request(app).get("/api/articles/?limit=1&p=2")
+            const expectedArticle = {
+                "author": "icellusedkars",
+                "title": "A",
+                "article_id": 6,
+                "topic": "mitch",
+                "created_at": expect.any(String),
+                "votes": 0,
+                "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                "comment_count": "1"
+            };
+            
+            expect(status).toBe(200)
+            expect(articles.length).toBe(1)
+            articles.forEach((article)=>{
+                expect(article).toMatchObject(expectedArticle)
+            })
+
+        })
+        test("200: responds with empty array when page is empty",async () => {
+            const {status,body:{articles}} = await request(app).get("/api/articles/?limit=10&p=10")
+            
+            expect(status).toBe(200)
+            expect(articles).toEqual([])
+            
+        })
+        test("400: status code when limit is invalid type",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/?limit=a&p=2")
+
+            expect(status).toBe(400)
+            expect(message).toBe("Bad request!")
+        })
+        test("400: status code when page is invalid type",async () => {
+            const {status,body:{message}} = await request(app).get("/api/articles/?limit=1&p=a")
+
+            expect(status).toBe(400)
+            expect(message).toBe("Bad request!")
         })
 
     });

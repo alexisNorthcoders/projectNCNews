@@ -13,7 +13,10 @@ app.all("/*", (req, res, next) => {
 
 });
 app.use((err, req, res, next) => {
-    
+    console.log(err)
+    if (err.code === "42703") {
+        res.status(400).send({ message: `Bad request!`})
+    }
     if (err.code === "22P02") {
         if (err.patcharticle_id && !err.where.includes("$1")) {
             

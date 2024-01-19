@@ -27,9 +27,10 @@ exports.fetchArticleById = (article_id) => {
             }
         });
 };
-exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,p) => {
+exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,p=1) => {
     const validSortQueries = ["author", "title", "article_id", "topic", "created_at", "votes", "comment_count"];
     const validOrderQueries = ["asc", "desc"];
+    const offset = limit * (p-1)
     
     if (!validSortQueries.includes(sort_by)) {
 
@@ -40,6 +41,9 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,
     }
     if (typeof parseInt(limit) !== "number"){
         return Promise.reject({ statusCode: 400, message: `${limit} is not a valid limit value` });
+    }
+    if (typeof parseInt(p) !== "number"){
+        return Promise.reject({ statusCode: 400, message: `${p} is not a valid page value` });
     }
     const queryParams = [];
     let query = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
@@ -55,6 +59,10 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC",limit=10,
                ORDER BY articles.${sort_by} ${order}`;
 
     query += ` LIMIT ${limit}`
+
+    if (p){
+        query += ` OFFSET ${offset}`
+    }
 
 
     return db.query(query, queryParams)
