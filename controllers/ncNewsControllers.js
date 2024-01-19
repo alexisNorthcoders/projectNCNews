@@ -1,5 +1,5 @@
 const { checkTopicExists } = require("../db/seeds/utils");
-const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId, insertArticle } = require("../models/ncNewsModels");
+const { fetchAllTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, removeCommentByCommentId, fetchUsers, fetchUserByUsername, updateCommentByCommentId, insertArticle, insertTopic } = require("../models/ncNewsModels");
 
 
 exports.getTopics = (req, res, next) => {
@@ -138,3 +138,13 @@ exports.postArticle = (req, res, next) => {
             return next(err);
         });
 };
+exports.postTopic = (req,res,next) => {
+    const topic = req.body
+
+    insertTopic(topic).then((topic) => {
+        res.status(201).send({topic})
+    }).catch(err => {
+        err.topic = topic.slug
+        return next(err);
+    });
+}

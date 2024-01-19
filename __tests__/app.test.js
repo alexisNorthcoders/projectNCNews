@@ -70,18 +70,18 @@ describe("GET /api/", () => {
         });
         test("200: responses are limited to 10 by default", async () => {
             const { status, body: { articles } } = await request(app).get("/api/articles");
-            
+
             expect(status).toBe(200);
             expect(articles.length).toBe(10);
         });
-        test("200: responses can be limited by a query limit",async () => {
+        test("200: responses can be limited by a query limit", async () => {
             const { status, body: { articles } } = await request(app).get("/api/articles/?limit=5");
-            
+
             expect(status).toBe(200);
             expect(articles.length).toBe(5);
-        })
-        test("200: responses can be offset by giving page value p",async () => {
-            const {status, body:{articles}} = await request(app).get("/api/articles/?limit=1&p=2")
+        });
+        test("200: responses can be offset by giving page value p", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles/?limit=1&p=2");
             const expectedArticle = {
                 "author": "icellusedkars",
                 "title": "A",
@@ -92,33 +92,33 @@ describe("GET /api/", () => {
                 "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                 "comment_count": "1"
             };
-            
-            expect(status).toBe(200)
-            expect(articles.length).toBe(1)
-            articles.forEach((article)=>{
-                expect(article).toMatchObject(expectedArticle)
-            })
 
-        })
-        test("200: responds with empty array when page is empty",async () => {
-            const {status,body:{articles}} = await request(app).get("/api/articles/?limit=10&p=10")
-            
-            expect(status).toBe(200)
-            expect(articles).toEqual([])
-            
-        })
-        test("400: status code when limit is invalid type",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/?limit=a&p=2")
+            expect(status).toBe(200);
+            expect(articles.length).toBe(1);
+            articles.forEach((article) => {
+                expect(article).toMatchObject(expectedArticle);
+            });
 
-            expect(status).toBe(400)
-            expect(message).toBe("Bad request!")
-        })
-        test("400: status code when page is invalid type",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/?limit=1&p=a")
+        });
+        test("200: responds with empty array when page is empty", async () => {
+            const { status, body: { articles } } = await request(app).get("/api/articles/?limit=10&p=10");
 
-            expect(status).toBe(400)
-            expect(message).toBe("Bad request!")
-        })
+            expect(status).toBe(200);
+            expect(articles).toEqual([]);
+
+        });
+        test("400: status code when limit is invalid type", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/?limit=a&p=2");
+
+            expect(status).toBe(400);
+            expect(message).toBe("Bad request!");
+        });
+        test("400: status code when page is invalid type", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/?limit=1&p=a");
+
+            expect(status).toBe(400);
+            expect(message).toBe("Bad request!");
+        });
 
     });
     describe("/articles?sort_by=:column_name?order=desc", () => {
@@ -225,55 +225,55 @@ describe("GET /api/", () => {
         });
         test("200: responses are limited to 10 by default", async () => {
             const { status, body: { comments } } = await request(app).get("/api/articles/1/comments");
-            
+
             expect(status).toBe(200);
             expect(comments.length).toBe(10);
         });
-        test("200: responses can be limited by a query limit",async () => {
+        test("200: responses can be limited by a query limit", async () => {
             const { status, body: { comments } } = await request(app).get("/api/articles/1/comments/?limit=5");
-            
+
             expect(status).toBe(200);
             expect(comments.length).toBe(5);
-        })
-        test("200: responses can be offset by giving page value p",async () => {
-            const {status, body:{comments}} = await request(app).get("/api/articles/1/comments/?limit=1&p=2")
+        });
+        test("200: responses can be offset by giving page value p", async () => {
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments/?limit=1&p=2");
             const expectedComment = {
                 "comment_id": 2,
                 "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
                 "article_id": 1,
-                "author":"butter_bridge",
+                "author": "butter_bridge",
                 "created_at": expect.any(String),
                 "votes": 14,
-                
+
             };
-            
-            expect(status).toBe(200)
-            expect(comments.length).toBe(1)
-            comments.forEach((comment)=>{
-                expect(comment).toMatchObject(expectedComment)
-            })
 
-        })
-        test("200: responds with empty array when page is empty",async () => {
-            const {status,body:{comments}} = await request(app).get("/api/articles/1/comments/?limit&p=10")
-            
-            expect(status).toBe(200)
-            expect(comments).toEqual([])
-            
-        })
-        test("400: status code when limit is invalid type",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/1/comments/?limit=a&p=2")
+            expect(status).toBe(200);
+            expect(comments.length).toBe(1);
+            comments.forEach((comment) => {
+                expect(comment).toMatchObject(expectedComment);
+            });
 
-            expect(status).toBe(400)
-            expect(message).toBe("Bad request!")
-        })
-        test("400: status code when page is invalid type",async () => {
-            const {status,body:{message}} = await request(app).get("/api/articles/1/comments/?limit=1&p=a")
+        });
+        test("200: responds with empty array when page is empty", async () => {
+            const { status, body: { comments } } = await request(app).get("/api/articles/1/comments/?limit&p=10");
 
-            expect(status).toBe(400)
-            expect(message).toBe("Bad request!")
-        })
-      
+            expect(status).toBe(200);
+            expect(comments).toEqual([]);
+
+        });
+        test("400: status code when limit is invalid type", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/1/comments/?limit=a&p=2");
+
+            expect(status).toBe(400);
+            expect(message).toBe("Bad request!");
+        });
+        test("400: status code when page is invalid type", async () => {
+            const { status, body: { message } } = await request(app).get("/api/articles/1/comments/?limit=1&p=a");
+
+            expect(status).toBe(400);
+            expect(message).toBe("Bad request!");
+        });
+
 
     });
     describe("/articles/?topic=:topic", () => {
@@ -436,6 +436,32 @@ describe("POST /api/", () => {
             expect(message).toBe("Invalid request! Missing information!");
         });
     });
+    describe.only("/topics/", () => {
+        test("201: status code responds with new added topic", async () => {
+            const { status, body: { topic } } = await request(app).post("/api/topics").send({
+                "slug": "dogs",
+                "description": "Yes dogs."
+            });
+            const expectedTopic = {
+                slug: "dogs",
+                description: "Yes dogs."
+            };
+            expect(status).toBe(201);
+            expect(topic).toMatchObject(expectedTopic);
+        });
+        test("400: status code responds with error message when missing information",async () => {
+            const {status,body:{message}} = await request(app).post("/api/topics").send({description:"dogs"})
+
+            expect(status).toBe(400)
+            expect(message).toBe("Invalid request! Missing information!")
+        })
+        test("400: status code responds with error message when topic already exists",async () => {
+            const {status,body:{message}} = await request(app).post("/api/topics").send({slug:"cats"})
+
+            expect(status).toBe(400)
+            expect(message).toBe("cats topic already exists!")
+        })
+         });
 });
 describe("PATCH /api/", () => {
     describe("/articles/:article_id", () => {

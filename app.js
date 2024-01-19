@@ -13,7 +13,10 @@ app.all("/*", (req, res, next) => {
 
 });
 app.use((err, req, res, next) => {
-    
+  
+    if (err.code === "23505") {
+        res.status(400).send({message: `${err.topic} topic already exists!`})
+    }
     if (err.code === "42703") {
         res.status(400).send({ message: `Bad request!`})
     }

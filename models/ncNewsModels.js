@@ -173,4 +173,10 @@ exports.insertArticle = (article) => {
         return rows[0];
     });
 }
-
+exports.insertTopic = (topic) => {
+    const query = `INSERT INTO topics (slug,description) VALUES ($1, $2) RETURNING *`
+    const queryParams = [topic.slug,topic.description]
+    return db.query(query, queryParams).then(({ rows }) => {
+        return rows[0];
+    });
+}
