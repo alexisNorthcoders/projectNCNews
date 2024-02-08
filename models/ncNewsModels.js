@@ -26,7 +26,7 @@ exports.fetchArticleById = (article_id) => {
             }
         });
 };
-exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit=10, p = 1) => {
+exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit = 10, p = 1) => {
     const validSortQueries = ["author", "title", "article_id", "topic", "created_at", "votes", "comment_count"];
     const validOrderQueries = ["asc", "desc"];
     if (limit === "") { limit = 10; }
@@ -46,27 +46,27 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "DESC", limit=10
     if (typeof parseInt(p) !== "number") {
         return Promise.reject({ statusCode: 400, message: `${p} is not a valid page value` });
     }
-    const queryParams = [];
-     let query = `SELECT count(*) OVER() AS total_count,articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url,
+    let query = `SELECT count(*) OVER() AS total_count, articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
     COUNT(comments.article_id) AS comment_count 
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
+    const queryParams = [];
     if (topic) {
         queryParams.push(topic);
         query += ` WHERE articles.topic = $1`;
     }
-    query += ` GROUP BY articles.article_id
-               ORDER BY articles.${sort_by} ${order}`;
 
-    query += ` LIMIT ${limit}`;
+    query += ` GROUP BY articles.article_id`;
 
-    if (p) {
-        query += ` OFFSET ${offset}`;
+    if (sort_by === 'comment_count') {
+        query += ` ORDER BY ${sort_by} ${order}`;
+    } else {
+        query += ` ORDER BY articles.${sort_by} ${order}`;
     }
- 
-/* let query = `SELECT count(*) OVER() AS total_count
-FROM table` */
+
+    query += ` LIMIT ${limit} OFFSET ${offset}`;
+
     return db.query(query, queryParams)
         .then(({ rows }) => rows);
 };
@@ -172,21 +172,21 @@ exports.insertArticle = (article) => {
     return db.query(query, queryParams).then(({ rows }) => {
         return rows[0];
     });
-}
+};
 exports.insertTopic = (topic) => {
-    const query = `INSERT INTO topics (slug,description) VALUES ($1, $2) RETURNING *`
-    const queryParams = [topic.slug,topic.description]
+    const query = `INSERT INTO topics (slug,description) VALUES ($1, $2) RETURNING *`;
+    const queryParams = [topic.slug, topic.description];
     return db.query(query, queryParams).then(({ rows }) => {
         return rows[0];
     });
-}
+};
 exports.removeArticle = async (article_id) => {
-    const query = `DELETE FROM articles WHERE article_id = $1`
+    const query = `DELETE FROM articles WHERE article_id = $1`;
 
-    const {rowCount} = await db.query(query,[article_id])
-    
+    const { rowCount } = await db.query(query, [article_id]);
+
     if (rowCount === 0) {
         return Promise.reject({ statusCode: 404, message: "Article not found!" });
     }
-  
-}
+
+};
