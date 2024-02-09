@@ -86,6 +86,26 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/articles": {
+    "description": "adds a new article",
+    "requestBody": {
+      "author": "author name",
+      "title": "title",
+      "body": "content of the article",
+      "topic": "topic",
+      "article_img_url": "article image url"
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 1,
+          "votes": 0,
+          "created_at": "date",
+          "comment_count": 0
+        }
+      ]
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": ["topic"],
