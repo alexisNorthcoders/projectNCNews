@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV || 'production'; // change this to development to use local database
 
 require('dotenv').config({
   path: `${__dirname}/../.env.${ENV}`,
@@ -13,7 +13,7 @@ const config = {};
 
 if (ENV === 'production') {
   config.connectionString = process.env.DATABASE_URL;
-  config.max = 2;
+  config.max = 4;
 }
 const db = new Pool(config)
 module.exports = db
