@@ -15,59 +15,49 @@ app.all("/*", (req, res, next) => {
 
 });
 app.use((err, req, res, next) => {
-  
+    let statusCode = 500;
+    let message = 'Internal Server Error';
+
     if (err.code === "23505") {
-        res.status(400).send({message: `${err.topic} topic already exists!`})
-    }
-    if (err.code === "42703") {
-        res.status(400).send({ message: `Bad request!`})
-    }
-    if (err.code === "22P02") {
+        statusCode = 400;
+        message = `${err.topic} topic already exists!`;
+    } else if (err.code === "42703") {
+        statusCode = 400;
+        message = 'Bad request!';
+    } else if (err.code === "22P02") {
         if (err.patcharticle_id && !err.where.includes("$1")) {
-            
-            res.status(400).send({ message: `${err.patcharticle_id} is an invalid article_id (number)` });
+            statusCode = 400;
+            message = `${err.patcharticle_id} is an invalid article_id (number)`;
+        } else if (err.inc_votes && !err.where.includes("$2")) {
+            statusCode = 400;
+            message = `${err.inc_votes}(inc_votes) is an invalid type (number)`;
+        } else if (err.article_id || err.comment_id) {
+            statusCode = 400;
+            message = `${err.article_id || err.comment_id} is an invalid ${err.article_id ? 'article_id' : 'comment_id'} (number)`;
         }
-        else if (err.inc_votes && !err.where.includes("$2")) {
-            
-            res.status(400).send({ message: `${err.inc_votes}(inc_votes) is an invalid type (number)` });
-        }
-        else if (err.article_id ) {
-            res.status(400).send({ message: `${err.article_id} is an invalid article_id (number)` });
-        }
-        else if (err.comment_id) {
-            
-            res.status(400).send({ message: `${err.comment_id} is an invalid comment_id (number)` });
-        }
-    }
-    else if (err.code === "23503") {
+    } else if (err.code === "23503") {
         if (err.article_id) {
-            res.status(404).send({ message: `Couldn't find article_id ${err.article_id}!` });
+            statusCode = 404;
+            message = `Couldn't find article_id ${err.article_id}!`;
+        } else if (err.username) {
+            statusCode = 404;
+            message = `Couldn't find username ${err.username}!`;
+        } else if (err.topic && err.detail.includes("topic")) {
+            statusCode = 404;
+            message = `Couldn't find topic ${err.topic}`;
+        } else if (err.author) {
+            statusCode = 404;
+            message = `Couldn't find author ${err.author}`;
         }
-        else if (err.username) {
-            res.status(404).send({ message: `Couldn't find username ${err.username}!` });
-        }
-        else if (err.topic && err.detail.includes("topic")){
-            res.status(404).send({message :`Couldn't find topic ${err.topic}`})
-        }
-        else if (err.author){
-            res.status(404).send({message :`Couldn't find author ${err.author}`})
-        }
-       
+    } else if (err.code === "23502") {
+        statusCode = 400;
+        message = "Invalid request! Missing information!";
+    } else if (err.statusCode === 404 || err.statusCode === 400) {
+        statusCode = err.statusCode;
+        message = err.message;
     }
-    else if (err.code === "23502") {
-        res.status(400).send({ message: "Invalid request! Missing information!" });
-    }
-    else if (err.statusCode === 404) {
 
-        res.status(404).send({ message: err.message });
-    }
-    else if (err.statusCode === 400) {
-
-        res.status(400).send({ message: err.message });
-    }
-    else {
-        res.status(500).send({ message: 'Internal Server Error' });
-    }
+    res.status(statusCode).send({ message });
 });
 
 
